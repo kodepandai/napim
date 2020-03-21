@@ -1,0 +1,25 @@
+{
+  "name": "core-api",
+  "version": "1.0.0",
+  "description": "Restful API Build with express and knex",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/axmad386/core-api.git"
+  },
+  "keywords": [
+    "express",
+    "nodejs",
+    "api",
+    "knex"
+  ],
+  "author": "Akhmad Salafudin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/axmad386/core-api/issues"
+  },
+  "homepage": "https://gitlab.com/axmad386/core-api#readme"
+}
