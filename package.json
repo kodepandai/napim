@@ -4,8 +4,6 @@
   "description": "Restful API Build with express and knex",
   "main": "core.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
     "test": "nodemon test/index.js"
   },
   "repository": {
