@@ -4,7 +4,9 @@
   "description": "Restful API Build with express and knex",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "nodemon test/index.js"
   },
   "repository": {
     "type": "git",
@@ -21,5 +23,13 @@
   "bugs": {
     "url": "https://gitlab.com/axmad386/core-api/issues"
   },
-  "homepage": "https://gitlab.com/axmad386/core-api#readme"
+  "homepage": "https://gitlab.com/axmad386/core-api#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "nodemon": "^2.0.2",
+    "path": "^0.12.7"
+  }
 }
