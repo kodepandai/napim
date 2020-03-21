@@ -1,8 +1,8 @@
 {
-  "name": "core-api",
+  "name": "@axmad386/core-api",
   "version": "1.0.0",
   "description": "Restful API Build with express and knex",
-  "main": "index.js",
+  "main": "core.js",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
