@@ -1,6 +1,4 @@
 require('dotenv').config()
-const path = require('./utils/path')
-
 
 const express = require('express');
 const router = require('./router')
