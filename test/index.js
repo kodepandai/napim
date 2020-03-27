@@ -1,1 +1,2 @@
-require('../index')
+const napim = require('../index')
+napim.start()

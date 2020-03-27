@@ -1,18 +1,26 @@
 require('dotenv').config()
-
+const log = require('./utils/logger')
 const express = require('express');
 const router = require('./router')
-const app = express()
-const { CallService, CoreService } = require('./core/ServiceProvider')
-app.use(express.json());
-app.use('', router)
-const server = require('http').createServer(app);
-const port = process.env.PORT || 3000
-server.listen(port, '0.0.0.0');
-server.on('error', onError);
-server.on('listening', onListening);
+const ServiceProvider = require('./core/ServiceProvider')
 
-function onError(error) {
+//start napim server
+const start = () => {
+    try {
+        const app = express()
+        app.use(express.json());
+        app.use('', router)
+        const server = require('http').createServer(app);
+        const port = process.env.PORT || 3000
+        server.listen(port, '0.0.0.0');
+        server.on('error', onError);
+        server.on('listening', () => onListening(server));
+    } catch (error) {
+        log.error(error.message)
+    }
+}
+
+const onError = (error) => {
     if (error.syscall !== 'listen') {
         throw error;
     }
@@ -40,10 +48,12 @@ function onError(error) {
  * Event listener for HTTP server "listening" event.
  */
 
-function onListening() {
+const onListening = (server) => {
     var addr = server.address();
     var bind = typeof addr === 'string'
         ? 'pipe ' + addr
         : 'port ' + addr.port;
     console.debug('Listening on ' + bind);
 }
+
+module.exports = { ...ServiceProvider, start }

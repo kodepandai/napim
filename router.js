@@ -1,26 +1,43 @@
 const express = require('express')
 const router = express.Router()
-const { servicePath } = require('./utils/path')
-const { CoreService, CoreResponse } = require('./core/ServiceProvider')
+const { servicePath, routePath } = require('./utils/path')
+const { ApiService, ApiResponse } = require('./core/ServiceProvider')
 
-router.get('/api/v1/:module/:service_name', async function (req, res) {
-    try {
-        const service = require(servicePath + '/' + req.params.module + '/' + req.params.service_name)
-        return CoreService(service).run(res, req, 'GET')
-    } catch (error) {
-        return CoreResponse.error(res, 'Service Not Found', {}, 404)
+const routeExec = (routes, method) => {
+    routes[method].forEach((r) => {
+        router[method](routes.prefix + r.path, (req, res) => {
+            try {
+                const service = require(servicePath + `/${method}` + r.service)
+                if (method != 'get') {
+                    req.body = { ...req.body, ...req.params }
+                } else {
+                    req.query = { ...req.query, ...req.params }
+                }
+                return ApiService(service).run(res, req, method.toUpperCase())
+            } catch (error) {
+                return ApiResponse.error(req, res, 'Service Not Found', {}, 500, "SERVICE_NOT_FOUND", "service " + r.service + ' not found')
+            }
+        })
+    })
+}
+
+const routers = require(routePath)
+routers.forEach((routes) => {
+    if (routes.get) {
+        routeExec(routes, 'get')
+    }
+    if (routes.post) {
+        routeExec(routes, 'post')
+    }
+    if (routes.put) {
+        routeExec(routes, 'put')
+    }
+    if (routes.delete) {
+        routeExec(routes, 'delete')
     }
 })
-router.post('/api/v1/:module/:service_name', async function (req, res) {
 
-    try {
-        const service = require(servicePath + '/' + req.params.module + '/' + req.params.service_name)
-        return CoreService(service).run(res, req, 'POST')
-    } catch (error) {
-        return CoreResponse.error(res, 'Service Not Found', {}, 404)
-    }
-})
 router.get('/', function (req, res) {
-    res.status(200).send('Core API running beautifully')
+    res.status(200).send('Node API Maker running beautifully')
 })
 module.exports = router

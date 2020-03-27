@@ -13,10 +13,11 @@ const service = {
         return input;
     },
 
-    process: async function (input, OriginalInput) {
+    process: async function (input, OriginalInput, ex) {
+        throw new ex('tes error')
         return input
     },
-    validation: {}
+    rules: {}
 }
 
 

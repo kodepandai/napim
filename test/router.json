@@ -1,0 +1,17 @@
+[
+    {
+        "prefix": "/api/v1",
+        "get": [
+            {
+                "path": "/test/get",
+                "service": "/test/get"
+            }
+        ],
+        "post": [
+            {
+                "path": "/test/post",
+                "service": "/test/post"
+            }
+        ]
+    }
+]
