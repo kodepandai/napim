@@ -11,13 +11,11 @@ const service = {
     prepare: async function (input) {
         return input;
     },
-
     process: async function (input, OriginalInput) {
-        return input.id
+        return input
     },
     rules: {
-        code: 'required',
-        tes: 'required'
+
     }
 }
 

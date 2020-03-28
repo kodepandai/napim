@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken')
 const log = require('../utils/logger')
+const { middlewarePath } = require('../utils/path')
 const { Validator } = require('node-input-validator')
 class ApiException {
     constructor(errorMessage = "", errorList = {}, errorCode = 422, errorData = { type: 'SERVER_ERROR', detail: "something wrong, check server log for more detail" }) {
@@ -40,6 +41,7 @@ var ApiResponse = {
     error: (req, res, errorMessage = "", errorList = {}, statusCode = 500, data = { type: 'SERVER_ERROR', detail: "something wrong" }) => {
         var result = {
             code: statusCode,
+            type: data.type
         }
         if (errorMessage !== "") {
             result.message = errorMessage
@@ -51,17 +53,18 @@ var ApiResponse = {
         if (errorList !== []) {
             result.errors = errorList
         }
-        result.path = req.path
+        result.path = req.method + ':' + req.path
         if (statusCode >= 500) {
-            if (process.env.DEBUG) {
-                log.error(result)
-                return res.status(statusCode).json(result);
+            log.error({ ...result }) //clone result sebelum dirubah
+            if (process.env.DEBUG == 'false') {
+                result.message = "Server Error"
+                result.type = "SERVER_ERROR"
+                result.detail = "something wrong"
+                result.errors = {}
             }
-            result.message = "Server Error"
-            return res.status(statusCode).json(result);
-        } else {
-            return res.status(statusCode).json(result);
         }
+
+        return res.status(statusCode).json(result);
     }
 }
 //digunakan untuk menjalankan service dari check token, transaction hingga prosess
@@ -91,9 +94,9 @@ const ApiExec = async (service, input, req, res) => {
 }
 
 const ApiService = (service) => ({
-    run: async (res, req = {}, method = 'GET') => {
-        let input = method == 'GET' ? req.query : req.body
-        var inputData = input
+    run: async (res, req = {}, method = 'GET', globalMiddleware = []) => {
+        let inputData = method == 'GET' ? req.query : req.body
+        // var inputData = input
 
         var session = {
             datetime: new Date,
@@ -103,28 +106,58 @@ const ApiService = (service) => ({
 
         // var token = null
 
-        if (service.auth) {
-            try {
-                var claim = jwt.verify(token, process.env.JWT_SECRET);
-                // console.log(claim)
-                // const result = await db.raw("SELECT 1 FROM api_token WHERE api_token=? AND user_id=?", [claim.api_token, claim.user_id]);
+        // if (service.auth) {
+        //     try {
+        //         var claim = jwt.verify(token, process.env.JWT_SECRET);
+        //         // console.log(claim)
+        //         // const result = await db.raw("SELECT 1 FROM api_token WHERE api_token=? AND user_id=?", [claim.api_token, claim.user_id]);
 
-                // if (result.rows.length > 0) {
-                if (token) {
-                    session.user_id = claim.user_id;
-                    session.key = claim.key;
-                    // session.user_id = 1;
-                    // session.api_token = token;
-                }
+        //         // if (result.rows.length > 0) {
+        //         if (token) {
+        //             session.user_id = claim.user_id;
+        //             session.key = claim.key;
+        //             // session.user_id = 1;
+        //             // session.api_token = token;
+        //         }
+        //     } catch (err) {
+        //         return ApiResponse.error(res, 'Token Invalid', {}, 403)
+        //     }
+
+
+        //     inputData.session = session;
+        //     // return ApiResponse.error(res, "Access Denied", {}, 403)
+        // }
+        // Global Middleware 
+        let pass = true
+        globalMiddleware.forEach((gmName) => {
+            let gm = null
+            try {
+                gm = require(middlewarePath + '/' + gmName)
             } catch (err) {
-                return ApiResponse.error(res, 'Token Invalid', {}, 403)
+                pass = false
+                return ApiResponse.error(req, res, "Middleware not found", {
+                    middleware_path: middlewarePath + '/' + gmName
+                }, 500, { type: "MIDDLEWARE_NOT_FOUND", detail: "module middleware with name " + gmName + " not found" })
+            }
+            try {
+                //before midlleware
+                gm.before(req, service, inputData, (newInput) => {
+                    inputData = newInput
+                })
+
+
+            } catch (err) {
+                pass = false
+                if (err instanceof ApiException) {
+                    return ApiResponse.error(req, res, err.errorMessage, err.errorList, err.errorCode, err.errorData);
+                }
+                return ApiResponse.error(req, res, err.message, { middleware_path: middlewarePath + '/' + gmName }, 500, { detail: 'error when executing middleware' })
             }
 
-
-            inputData.session = session;
-            // return ApiResponse.error(res, "Access Denied", {}, 403)
+        })
+        if (pass) {
+            return await ApiExec(service, inputData, req, res);
         }
-        return await ApiExec(service, inputData, req, res);
     },
     call: async (input) => {
         return await ApiCall(service, input);

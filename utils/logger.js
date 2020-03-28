@@ -14,9 +14,9 @@ const error = (error_data) => {
         fs.writeFileSync(error_file, "[]")
     }
     let last = require(error_file)
-    error_data = { time: new Date(), data: error_data }
+    error_data = { time: new Date(), error: error_data }
     last.push(error_data)
-    fs.writeFile(error_file, JSON.stringify(last), () => { })
+    fs.writeFile(error_file, JSON.stringify(last, null, 2), () => { })
 }
 
 module.exports = { error }
