@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://gitlab.com/axmad386/core-api.git"
+    "url": "git+https://gitlab.com/axmad386/napim.git"
   },
   "keywords": [
     "express",
@@ -19,9 +19,9 @@
   "author": "Akhmad Salafudin",
   "license": "ISC",
   "bugs": {
-    "url": "https://gitlab.com/axmad386/core-api/issues"
+    "url": "https://gitlab.com/axmad386/napim/issues"
   },
-  "homepage": "https://gitlab.com/axmad386/core-api#readme",
+  "homepage": "https://gitlab.com/axmad386/napim#readme",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "dotenv": "^8.2.0",
