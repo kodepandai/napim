@@ -18,7 +18,7 @@ const routeExec = (routes, method, middleware) => {
                 } else {
                     req.query = { ...req.query, ...req.params }
                 }
-                return ApiService(service).run(res, req, method.toUpperCase(), middleware)
+                return ApiService(service).run(req, res, method.toUpperCase(), middleware)
             } catch (err) {
                 return ApiResponse.error(req, res, err.message)
             }

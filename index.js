@@ -1,22 +1,22 @@
 require('dotenv').config()
-const log = require('./utils/logger')
+const Log = require('./utils/logger')
 const express = require('express');
 const router = require('./router')
 const ServiceProvider = require('./core/ServiceProvider')
 
 //start napim server
+const port = process.env.PORT || 3000
 const start = () => {
     try {
         const app = express()
         app.use(express.json());
         app.use('', router)
         const server = require('http').createServer(app);
-        const port = process.env.PORT || 3000
         server.listen(port, '0.0.0.0');
         server.on('error', onError);
         server.on('listening', () => onListening(server));
     } catch (error) {
-        log.error(error.message)
+        Log.error(error.message)
     }
 }
 

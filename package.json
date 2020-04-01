@@ -4,7 +4,8 @@
   "description": "Node Api Maker build with express and knex",
   "main": "index.js",
   "scripts": {
-    "test": "nodemon test/index.js"
+    "test": "nodemon test/index.js",
+    "start": "node test/index.js"
   },
   "repository": {
     "type": "git",
