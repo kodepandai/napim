@@ -2,6 +2,20 @@ const jwt = require('jsonwebtoken')
 const log = require('../utils/logger')
 const { middlewarePath } = require('../utils/path')
 const { Validator } = require('node-input-validator')
+const Knex = require('knex')
+const db = Knex({
+    client: 'mysql',
+    debug: true,
+    connection: {
+        database: 'napim',
+        user: 'root',
+        password: 'evtf78ds'
+    },
+    pool: {
+        min: 2,
+        max: 10
+    }
+});
 class ApiException {
     constructor(errorMessage = "", errorList = {}, errorCode = 422, errorData = { type: 'SERVER_ERROR', detail: "something wrong, check server log for more detail" }) {
         this.errorMessage = errorMessage;
@@ -12,7 +26,8 @@ class ApiException {
 }
 //menjalankan service tanpa validasi token dan transaction check
 //bisa digunakan untuk komunikasi antar service
-const ApiCall = async (service, input) => {
+const ApiCall = async (service, input, trx = null) => {
+
     try {
         const validator = new Validator(input, service.rules);
 
@@ -23,9 +38,9 @@ const ApiCall = async (service, input) => {
                 detail: 'Unprocessable Entity'
             });
         }
-        var inputNew = await service.prepare(input);
+        var inputNew = await service.prepare(input, trx);
         const inputProcess = (inputNew == null) ? input : inputNew;
-        const result = await service.process(inputProcess, input);
+        const result = await service.process(inputProcess, input, trx);
         return result
     } catch (err) {
         throw err
@@ -71,19 +86,15 @@ var ApiResponse = {
 const ApiExec = async (service, input, req, res) => {
     try {
         if (service.transaction === true) {
-            // await db.raw("BEGIN")
+            await db.transaction(async trx => {
+                const result = await ApiCall(service, input, trx)
+                return ApiResponse.success(res, result)
+            })
+        } else {
+            const result = await ApiCall(service, input)
+            return ApiResponse.success(res, result)
         }
-
-        const result = await ApiCall(service, input)
-        if (service.transaction === true) {
-            // await db.raw("COMMIT")
-        }
-        return ApiResponse.success(res, result)
     } catch (err) {
-        if (service.transaction === true) {
-            // await db.raw("ROLLBACK")
-        }
-
         if (err instanceof ApiException) {
             return ApiResponse.error(req, res, err.errorMessage, err.errorList, err.errorCode, err.errorData);
         } else {
@@ -163,4 +174,4 @@ const ApiService = (service) => ({
         return await ApiCall(service, input);
     }
 })
-module.exports = { ApiCall, ApiExec, ApiException, ApiResponse, ApiService }
+module.exports = { ApiCall, ApiExec, ApiException, ApiResponse, ApiService, db }
