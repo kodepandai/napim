@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const { servicePath, routePath } = require('./utils/path')
-const { ApiService, ApiResponse, ApiException } = require('./core/ServiceProvider')
+const { ApiService, ApiResponse } = require('./core/ServiceProvider')
 
 const routeExec = (routes, method, middleware) => {
     routes[method].forEach((r) => {
@@ -44,5 +44,12 @@ routers.forEach((routes) => {
 
 router.get('/', function (req, res) {
     res.status(200).send('Node API Maker running beautifully')
+})
+
+router.all('*', function (req, res) {
+    ApiResponse.error(req, res, "Service Not Found", {}, 404, {
+        type: 'SERVICE_NOT_FOUND',
+        detail: 'no service can handle this route, check router for detail'
+    })
 })
 module.exports = router
