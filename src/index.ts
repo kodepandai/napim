@@ -1,9 +1,11 @@
 require('dotenv').config()
 import http from 'http'
 import Log from './utils/logger'
-import express, { Application } from 'express';
+import express, { Application, Request, Response } from 'express';
 import router from './router'
 export * from './core/ServiceProvider'
+export * from './utils/interface'
+export { Request, Response }
 
 //start napim server
 const port: (string | number) = process.env.PORT || 3000

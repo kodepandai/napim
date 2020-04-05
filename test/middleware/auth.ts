@@ -1,5 +1,6 @@
-const { ApiException } = require('../../index')
-const auth = {
+import { ApiException, IMiddleware } from '../../dist/index'
+const jwt = require('jsonwebtoken')
+const auth: IMiddleware = {
     /**
      * executed before service run
      * you can filter user input or make authorization here
@@ -19,7 +20,7 @@ const auth = {
         next(input)
     },
     /**
-     * executed before service run
+     * executed after service run
      * there is no next method here, this is final method after service execution
      */
     after: (req, service, input) => {

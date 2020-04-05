@@ -14,7 +14,7 @@ const routeExec = (routes: IRoutesKey, method: Tmethod, middleware: string[]) =>
         router[method](routes.prefix + r.path, (req: Request, res: Response) => {
             let service: IService
             try {
-                service = require(servicePath + `/${method}` + r.service)
+                service = require(servicePath + `/${method}` + r.service).default
             } catch (err) {
                 return ApiResponse.error(req, res, 'Service Not Found', {}, 500, { type: "SERVICE_NOT_FOUND", detail: "service " + method + r.service + ' not found' })
             }

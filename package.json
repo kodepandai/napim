@@ -6,7 +6,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "rm -rf dist && tsc",
-    "test": "nodemon test/index.js",
+    "build-test": "cd test && rm -rf dist_test && tsc && cd ..",
+    "test": "nodemon dist_test/index.js",
     "start": "node test/index.js"
   },
   "repository": {

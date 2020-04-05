@@ -1,4 +1,3 @@
-const jwt = require('jsonwebtoken')
 import Log from '../utils/logger'
 import { middlewarePath } from '../utils/path'
 import { Validator } from 'node-input-validator'
@@ -20,18 +19,14 @@ const db = Knex({
     }
 });
 
+/**
+ * create Exception Instance that will be thrown to client response
+ */
 class ApiException {
     errorMessage: string
     errorList: object | any[]
     errorCode: number
     errorData: IErrorData
-    /**
-     * create Exception Instance that will be thrown to client response
-     * @param {String} errorMessage 
-     * @param {Object} errorList 
-     * @param {Number} errorCode 
-     * @param {Object} errorData 
-     */
     constructor(errorMessage = "", errorList = {}, errorCode = 500, errorData = { type: 'SERVER_ERROR', detail: "something wrong, check server log for more detail" }) {
         this.errorMessage = errorMessage;
         this.errorList = errorList;
@@ -41,11 +36,8 @@ class ApiException {
 }
 /**
  * executing service without middleware, can be used for communicate between services
- * @param {Object} service 
- * @param {*} input 
- * @param {*} trx 
  */
-const ApiCall = async (service: IService, input: object, trx = null) => {
+const ApiCall = async (service: IService, input: any, trx: any = null) => {
 
     try {
         const validator = new Validator(input, service.rules);
@@ -67,13 +59,10 @@ const ApiCall = async (service: IService, input: object, trx = null) => {
 }
 /**
  * Create Http Response API
- * @method success
- * @method error
  */
 var ApiResponse = {
     /**
-     * @param {Object} res
-     * @param {Object} data
+     * response json success
      */
     success: (res: Response, data: object) => {
         var body = data
@@ -81,12 +70,7 @@ var ApiResponse = {
         return res.status(statusCode).json(body);
     },
     /**
-    * @param {Object} req
-    * @param {Object} res
-    * @param {String} errorMessage
-    * @param {Object} errorList
-    * @param {Number} errorCode
-    * @param {Object} data
+    * response json error
     */
     error: (req: Request, res: Response, errorMessage: string = "", errorList: object | any[] = {}, statusCode: number = 500, data: IErrorData = { type: 'SERVER_ERROR', detail: "something wrong" }) => {
         var result = {
@@ -111,12 +95,8 @@ var ApiResponse = {
 }
 /**
  * Executing service
- * @param {Object} service 
- * @param {*} input 
- * @param {Object} req 
- * @param {Object} res 
  */
-const ApiExec = async (service: IService, input: object, req: Request, res: Response) => {
+const ApiExec = async (service: IService, input: any, req: Request, res: Response) => {
     try {
         if (service.transaction === true) {
             await db.transaction(async (trx: any) => {
@@ -138,6 +118,7 @@ const ApiExec = async (service: IService, input: object, req: Request, res: Resp
 }
 
 const ApiService = (service: IService) => ({
+    /** run service with middleware applied */
     run: async (req: Request, res: Response, method: TMethod = 'get', globalMiddleware: string[] = []) => {
         let inputData = method == 'get' ? req.query : req.body
 
@@ -153,7 +134,8 @@ const ApiService = (service: IService) => ({
     }
 })
 
-const beforeMiddlewareExec = (req: Request, service: IService, inputData: object, globalMiddleware: any[]) => {
+/** execute before middleware */
+const beforeMiddlewareExec = (req: Request, service: IService, inputData: any, globalMiddleware: any[]) => {
     let gmInstance: IGmInstance[] = []
     globalMiddleware.forEach((gmName) => {
         try {
@@ -165,7 +147,7 @@ const beforeMiddlewareExec = (req: Request, service: IService, inputData: object
             }, 500, { type: "MIDDLEWARE_NOT_FOUND", detail: "module middleware with name " + gmName + " not found" })
         }
         try {
-            gm.before(req, service, inputData, (newInput: object) => {
+            gm.before(req, service, inputData, (newInput: any) => {
                 inputData = newInput
             })
         } catch (err) {
@@ -178,7 +160,9 @@ const beforeMiddlewareExec = (req: Request, service: IService, inputData: object
     })
     return gmInstance
 }
-const afterMiddlewareExec = (req: Request, service: IService, inputData: object, gmInstance: IGmInstance[]) => {
+
+/** execute before middleware */
+const afterMiddlewareExec = (req: Request, service: IService, inputData: any, gmInstance: IGmInstance[]) => {
     gmInstance.forEach(({ instance }) => {
         try {
             instance.after(req, service, inputData)

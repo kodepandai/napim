@@ -1,11 +1,9 @@
-const { ApiException, db } = require('../../../../index')
+import { ApiException, db, IService } from '../../../../dist/index'
 /**
  * Service Test
  */
 
-const service = {
-
-
+const service: IService = {
     transaction: true,
     auth: false,
     prepare: async function (input) {
@@ -21,15 +19,15 @@ const service = {
             })
         console.log('data[0] adalah', data[0]);
 
-        if (data[0] > 20) {
-            throw new ApiException('error ceritanya')
-        }
-        return data[0]
+        // if (data[0] > 20) {
+        //     throw new ApiException('error ceritanya')
+        // }
+        return await db('users').select('*')
     },
     rules: {
 
     }
 }
 
+export default service
 
-module.exports = service
