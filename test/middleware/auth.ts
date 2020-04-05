@@ -27,4 +27,4 @@ const auth: IMiddleware = {
     }
 }
 
-module.exports = auth
+export default auth

@@ -17,7 +17,7 @@ const service: IService = {
                 email: Math.random() * 100 + '@gmail.com',
                 password: 'tes'
             })
-        console.log('data[0] adalah', data[0]);
+        // console.log('data[0] adalah', data[0]);
 
         // if (data[0] > 20) {
         //     throw new ApiException('error ceritanya')
@@ -30,4 +30,3 @@ const service: IService = {
 }
 
 export default service
-

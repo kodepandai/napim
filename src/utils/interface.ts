@@ -1,4 +1,8 @@
 import { Request } from 'express'
+import { TNext } from './types'
+export interface IKeyVal {
+    [key: string]: any
+}
 export interface IRoutes {
     post?: object[],
     get?: object[],
@@ -21,7 +25,6 @@ export interface IErrorData {
     type: string,
     detail: string
 }
-export type TNext = (input: any) => object
 export interface IMiddleware {
     before(req: Request, service: IService, input: any, next: TNext): void,
     after(req: Request, service: IService, input: any): void

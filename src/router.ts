@@ -1,20 +1,18 @@
 import { Request, Response, Router } from 'express'
 import { servicePath, routePath } from './utils/path'
 import { ApiService, ApiResponse } from './core/ServiceProvider'
-import { IRoute, IRoutes, IService } from './utils/interface'
+import { IRoute, IRoutes, IService, IKeyVal } from './utils/interface'
+import { Tmethod } from './utils/types'
 
 let router: Router = Router()
-type Tmethod = 'post' | 'delete' | 'get' | 'put'
-interface IRoutesKey {
-    [key: string]: any
-}
 
-const routeExec = (routes: IRoutesKey, method: Tmethod, middleware: string[]) => {
+const routeExec = (routes: IKeyVal, method: Tmethod, middleware: string[]) => {
     routes[method].forEach((r: IRoute) => {
         router[method](routes.prefix + r.path, (req: Request, res: Response) => {
             let service: IService
             try {
-                service = require(servicePath + `/${method}` + r.service).default
+                let instance = require(servicePath + `/${method}` + r.service)
+                service = instance.default || instance
             } catch (err) {
                 return ApiResponse.error(req, res, 'Service Not Found', {}, 500, { type: "SERVICE_NOT_FOUND", detail: "service " + method + r.service + ' not found' })
             }

@@ -1,23 +1,24 @@
+import path from 'path'
 import Log from '../utils/logger'
 import { middlewarePath } from '../utils/path'
 import { Validator } from 'node-input-validator'
 import Knex from 'knex'
 import { Response, Request } from 'express'
-import { IService, IErrorData, IGmInstance } from '../utils/interface'
+import { IService, IErrorData, IGmInstance, IKeyVal } from '../utils/interface'
 type TMethod = 'post' | 'delete' | 'get' | 'put'
-const db = Knex({
-    client: 'mysql',
-    debug: true,
-    connection: {
-        database: 'napim',
-        user: 'root',
-        password: 'evtf78ds'
-    },
-    pool: {
-        min: 2,
-        max: 10
-    }
-});
+let knexFile: any
+try {
+    knexFile = require(path.resolve(process.cwd(), 'knexfile.js'))
+} catch (error) {
+    console.error('missing knexfile.js')
+    process.exit(1)
+}
+if (!Object.keys(knexFile).includes(process.env.DB_ENV || 'development')) {
+    console.error('invalid DB_ENV, available environment: ' + Object.keys(knexFile))
+    process.exit(1)
+
+}
+const db = Knex(knexFile[process.env.DB_ENV || 'development']);
 
 /**
  * create Exception Instance that will be thrown to client response
@@ -139,7 +140,8 @@ const beforeMiddlewareExec = (req: Request, service: IService, inputData: any, g
     let gmInstance: IGmInstance[] = []
     globalMiddleware.forEach((gmName) => {
         try {
-            var gm = require(middlewarePath + '/' + gmName)
+            let instance = require(middlewarePath + '/' + gmName)
+            var gm = instance.default || instance
             gmInstance.push({ name: gmName, instance: gm })
         } catch (err) {
             throw new ApiException("Middleware not found", {
