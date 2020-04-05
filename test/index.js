@@ -1,2 +1,2 @@
-const napim = require('../index')
+const napim = require('../dist/index')
 napim.start()

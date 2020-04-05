@@ -1,8 +1,11 @@
 const jwt = require('jsonwebtoken')
-const Log = require('../utils/logger')
-const { middlewarePath } = require('../utils/path')
-const { Validator } = require('node-input-validator')
-const Knex = require('knex')
+import Log from '../utils/logger'
+import { middlewarePath } from '../utils/path'
+import { Validator } from 'node-input-validator'
+import Knex from 'knex'
+import { Response, Request } from 'express'
+import { IService, IErrorData, IGmInstance } from '../utils/interface'
+type TMethod = 'post' | 'delete' | 'get' | 'put'
 const db = Knex({
     client: 'mysql',
     debug: true,
@@ -16,7 +19,12 @@ const db = Knex({
         max: 10
     }
 });
+
 class ApiException {
+    errorMessage: string
+    errorList: object | any[]
+    errorCode: number
+    errorData: IErrorData
     /**
      * create Exception Instance that will be thrown to client response
      * @param {String} errorMessage 
@@ -37,7 +45,7 @@ class ApiException {
  * @param {*} input 
  * @param {*} trx 
  */
-const ApiCall = async (service, input, trx = null) => {
+const ApiCall = async (service: IService, input: object, trx = null) => {
 
     try {
         const validator = new Validator(input, service.rules);
@@ -67,7 +75,7 @@ var ApiResponse = {
      * @param {Object} res
      * @param {Object} data
      */
-    success: (res, data) => {
+    success: (res: Response, data: object) => {
         var body = data
         var statusCode = 200;
         return res.status(statusCode).json(body);
@@ -80,22 +88,14 @@ var ApiResponse = {
     * @param {Number} errorCode
     * @param {Object} data
     */
-    error: (req, res, errorMessage = "", errorList = {}, statusCode = 500, data = { type: 'SERVER_ERROR', detail: "something wrong" }) => {
+    error: (req: Request, res: Response, errorMessage: string = "", errorList: object | any[] = {}, statusCode: number = 500, data: IErrorData = { type: 'SERVER_ERROR', detail: "something wrong" }) => {
         var result = {
             code: statusCode,
-            type: data.type
+            message: errorMessage != "" ? errorMessage : "",
+            ...data,
+            errors: {},
+            path: req.method + ':' + req.path
         }
-        if (errorMessage !== "") {
-            result.message = errorMessage
-        }
-        result = {
-            ...result,
-            ...data
-        }
-        if (errorList !== []) {
-            result.errors = errorList
-        }
-        result.path = req.method + ':' + req.path
         if (statusCode >= 500) {
             Log.error({ ...result }) //clone result sebelum dirubah
             if (process.env.DEBUG == 'false') {
@@ -116,10 +116,10 @@ var ApiResponse = {
  * @param {Object} req 
  * @param {Object} res 
  */
-const ApiExec = async (service, input, req, res) => {
+const ApiExec = async (service: IService, input: object, req: Request, res: Response) => {
     try {
         if (service.transaction === true) {
-            await db.transaction(async trx => {
+            await db.transaction(async (trx: any) => {
                 const result = await ApiCall(service, input, trx)
                 return ApiResponse.success(res, result)
             })
@@ -137,9 +137,9 @@ const ApiExec = async (service, input, req, res) => {
     }
 }
 
-const ApiService = (service) => ({
-    run: async (req = {}, res, method = 'GET', globalMiddleware = []) => {
-        let inputData = method == 'GET' ? req.query : req.body
+const ApiService = (service: IService) => ({
+    run: async (req: Request, res: Response, method: TMethod = 'get', globalMiddleware: string[] = []) => {
+        let inputData = method == 'get' ? req.query : req.body
 
         // Global Middleware 
         try {
@@ -153,8 +153,8 @@ const ApiService = (service) => ({
     }
 })
 
-const beforeMiddlewareExec = (req, service, inputData, globalMiddleware) => {
-    let gmInstance = []
+const beforeMiddlewareExec = (req: Request, service: IService, inputData: object, globalMiddleware: any[]) => {
+    let gmInstance: IGmInstance[] = []
     globalMiddleware.forEach((gmName) => {
         try {
             var gm = require(middlewarePath + '/' + gmName)
@@ -165,7 +165,7 @@ const beforeMiddlewareExec = (req, service, inputData, globalMiddleware) => {
             }, 500, { type: "MIDDLEWARE_NOT_FOUND", detail: "module middleware with name " + gmName + " not found" })
         }
         try {
-            gm.before(req, service, inputData, (newInput) => {
+            gm.before(req, service, inputData, (newInput: object) => {
                 inputData = newInput
             })
         } catch (err) {
@@ -178,8 +178,8 @@ const beforeMiddlewareExec = (req, service, inputData, globalMiddleware) => {
     })
     return gmInstance
 }
-const afterMiddlewareExec = (req, service, inputData, gmInstance) => {
-    gmInstance.forEach(({ name, instance }) => {
+const afterMiddlewareExec = (req: Request, service: IService, inputData: object, gmInstance: IGmInstance[]) => {
+    gmInstance.forEach(({ instance }) => {
         try {
             instance.after(req, service, inputData)
         } catch (err) {
@@ -197,4 +197,4 @@ const afterMiddlewareExec = (req, service, inputData, gmInstance) => {
         }
     })
 }
-module.exports = { ApiCall, ApiException, ApiResponse, ApiService, db }
+export { ApiCall, ApiException, ApiResponse, ApiService, db }

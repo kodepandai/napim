@@ -1,11 +1,12 @@
-const { logPath } = require('./path')
-const moment = require('moment')
-const fs = require('fs')
+import { logPath } from './path'
+import moment from 'moment'
+import fs from 'fs'
 
 if (!fs.existsSync(logPath)) {
     fs.mkdirSync(logPath)
 }
-const error = (error_data) => {
+
+const error = (error_data: object): void => {
     let time = moment().format('YYYY-MM-DD')
     let error_file = logPath + '/' + time + '-error.json'
     try {
@@ -19,4 +20,4 @@ const error = (error_data) => {
     fs.writeFile(error_file, JSON.stringify(last, null, 2), () => { })
 }
 
-module.exports = { error }
+export default { error }

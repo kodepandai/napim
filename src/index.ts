@@ -1,18 +1,19 @@
 require('dotenv').config()
-const Log = require('./utils/logger')
-const express = require('express');
-const router = require('./router')
-const ServiceProvider = require('./core/ServiceProvider')
+import http from 'http'
+import Log from './utils/logger'
+import express, { Application } from 'express';
+import router from './router'
+export * from './core/ServiceProvider'
 
 //start napim server
-const port = process.env.PORT || 3000
-const start = () => {
+const port: (string | number) = process.env.PORT || 3000
+const start = (): void => {
     try {
-        const app = express()
+        const app: Application = express()
         app.use(express.json());
         app.use('', router)
-        const server = require('http').createServer(app);
-        server.listen(port, '0.0.0.0');
+        const server: http.Server = http.createServer(app);
+        server.listen(port);
         server.on('error', onError);
         server.on('listening', () => onListening(server));
     } catch (error) {
@@ -20,7 +21,7 @@ const start = () => {
     }
 }
 
-const onError = (error) => {
+const onError = (error: any) => {
     if (error.syscall !== 'listen') {
         throw error;
     }
@@ -34,11 +35,9 @@ const onError = (error) => {
         case 'EACCES':
             console.error(bind + ' requires elevated privileges');
             process.exit(1);
-            break;
         case 'EADDRINUSE':
             console.error(bind + ' is already in use');
             process.exit(1);
-            break;
         default:
             throw error;
     }
@@ -48,12 +47,12 @@ const onError = (error) => {
  * Event listener for HTTP server "listening" event.
  */
 
-const onListening = (server) => {
-    var addr = server.address();
+const onListening = (server: http.Server) => {
+    var addr: any = server.address();
     var bind = typeof addr === 'string'
         ? 'pipe ' + addr
         : 'port ' + addr.port;
     console.debug('Listening on ' + bind);
 }
 
-module.exports = { ...ServiceProvider, start }
+export { start }
