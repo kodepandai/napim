@@ -1,5 +1,5 @@
 import { Request } from 'express'
-import { TNext } from './types'
+import { TNext, Tmethod } from './types'
 export interface IKeyVal {
     [key: string]: any
 }
@@ -15,11 +15,13 @@ export interface IRoute {
     service: string
 }
 export interface IService {
+    method?: Tmethod[],
     transaction: boolean,
     auth?: boolean,
-    prepare(input: any | any[], tsx?: any): object,
-    process(input: any, originalInput: any, tsx?: any): object,
-    rules: object
+    prepare: (input: any | any[], tsx?: any) => any,
+    process: (input: any, originalInput: any, tsx?: any) => any,
+    rules: object,
+    customMessages?: object | undefined
 }
 export interface IErrorData {
     type: string,

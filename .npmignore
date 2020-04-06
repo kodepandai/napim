@@ -4,3 +4,7 @@ log/
 src/
 dist_test/
 test/
+.gitignore
+knexfile.js
+tsconfig.json
+migrations/

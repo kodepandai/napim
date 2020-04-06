@@ -1,11 +1,9 @@
 require('dotenv').config()
 import http from 'http'
 import Log from './utils/logger'
-import express, { Application, Request, Response } from 'express';
+import express, { Application } from 'express';
 import router from './router'
-export * from './core/ServiceProvider'
-export * from './utils/interface'
-export { Request, Response }
+import * as Console from './utils/console'
 
 //start napim server
 const port: (string | number) = process.env.PORT || 3000
@@ -35,10 +33,10 @@ const onError = (error: any) => {
     // handle specific listen errors with friendly messages
     switch (error.code) {
         case 'EACCES':
-            console.error(bind + ' requires elevated privileges');
+            Console.error(bind + ' requires elevated privileges');
             process.exit(1);
         case 'EADDRINUSE':
-            console.error(bind + ' is already in use');
+            Console.error(bind + ' is already in use');
             process.exit(1);
         default:
             throw error;
@@ -54,7 +52,11 @@ const onListening = (server: http.Server) => {
     var bind = typeof addr === 'string'
         ? 'pipe ' + addr
         : 'port ' + addr.port;
-    console.debug('Listening on ' + bind);
+    Console.success('Listening on ' + bind);
 }
 
 export { start }
+export { Request, Response } from 'express'
+export * from './core/ServiceProvider'
+export * from './utils/interface'
+export { Console }

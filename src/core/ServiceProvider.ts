@@ -4,22 +4,22 @@ import { middlewarePath } from '../utils/path'
 import { Validator } from 'node-input-validator'
 import Knex from 'knex'
 import { Response, Request } from 'express'
-import { IService, IErrorData, IGmInstance, IKeyVal } from '../utils/interface'
-type TMethod = 'post' | 'delete' | 'get' | 'put'
+import { IService, IErrorData, IGmInstance } from '../utils/interface'
+import { Tmethod } from '../utils/types'
+import * as Console from '../utils/console'
 let knexFile: any
 try {
     knexFile = require(path.resolve(process.cwd(), 'knexfile.js'))
 } catch (error) {
-    console.error('missing knexfile.js')
+    Console.error('missing knexfile.js, run npx knex init to create it!')
     process.exit(1)
 }
 if (!Object.keys(knexFile).includes(process.env.DB_ENV || 'development')) {
-    console.error('invalid DB_ENV, available environment: ' + Object.keys(knexFile))
+    Console.error('invalid DB_ENV, available environment: ' + Object.keys(knexFile))
     process.exit(1)
 
 }
 const db = Knex(knexFile[process.env.DB_ENV || 'development']);
-
 /**
  * create Exception Instance that will be thrown to client response
  */
@@ -41,7 +41,7 @@ class ApiException {
 const ApiCall = async (service: IService, input: any, trx: any = null) => {
 
     try {
-        const validator = new Validator(input, service.rules);
+        const validator = new Validator(input, service.rules, service.customMessages || undefined);
 
         const valid = await validator.check();
         if (!valid) {
@@ -120,7 +120,7 @@ const ApiExec = async (service: IService, input: any, req: Request, res: Respons
 
 const ApiService = (service: IService) => ({
     /** run service with middleware applied */
-    run: async (req: Request, res: Response, method: TMethod = 'get', globalMiddleware: string[] = []) => {
+    run: async (req: Request, res: Response, method: Tmethod = 'get', globalMiddleware: string[] = []) => {
         let inputData = method == 'get' ? req.query : req.body
 
         // Global Middleware 

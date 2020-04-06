@@ -11,10 +11,15 @@ const routeExec = (routes: IKeyVal, method: Tmethod, middleware: string[]) => {
         router[method](routes.prefix + r.path, (req: Request, res: Response) => {
             let service: IService
             try {
-                let instance = require(servicePath + `/${method}` + r.service)
+                let instance = require(servicePath + r.service)
                 service = instance.default || instance
             } catch (err) {
-                return ApiResponse.error(req, res, 'Service Not Found', {}, 500, { type: "SERVICE_NOT_FOUND", detail: "service " + method + r.service + ' not found' })
+                return ApiResponse.error(req, res, 'Service Not Found', {}, 404, { type: "SERVICE_NOT_FOUND", detail: "service " + r.service + ' not found' })
+            }
+            if (service.method) {
+                if (!service.method.includes(method)) {
+                    return ApiResponse.error(req, res, 'Method not allowed', {}, 405, { detail: "allowed method:  " + service.method.join(', '), type: "METHOD_NOT_ALLOWED" })
+                }
             }
             try {
                 if (method != 'get') {
@@ -51,8 +56,8 @@ router.get('/', function (req: Request, res: Response) {
 })
 
 router.all('*', function (req: Request, res: Response) {
-    ApiResponse.error(req, res, "Service Not Found", {}, 404, {
-        type: 'SERVICE_NOT_FOUND',
+    ApiResponse.error(req, res, "Invalid route path", {}, 404, {
+        type: 'ROUTE_NOT_FOUND',
         detail: 'no service can handle this route, check router for detail'
     })
 })
