@@ -65,20 +65,25 @@ var ApiResponse = {
     /**
      * response json success
      */
-    success: (res: Response, data: object) => {
+    success: (res: Response, data: object, code: number = 200) => {
+        if (code >= 300) {
+            throw new ApiException('invalid http code', {}, 500, { type: 'INVALID_HTTP_CODE', detail: 'you must return valid http code for success response, returned code from service is: ' + code })
+        }
         var body = data
-        var statusCode = 200;
-        return res.status(statusCode).json(body);
+        return res.status(code).json(body);
     },
     /**
     * response json error
     */
     error: (req: Request, res: Response, errorMessage: string = "", errorList: object | any[] = {}, statusCode: number = 500, data: IErrorData = { type: 'SERVER_ERROR', detail: "something wrong" }) => {
+        if (statusCode < 300) {
+            throw new ApiException('invalid http code', {}, 500, { type: 'INVALID_HTTP_CODE', detail: 'you must return valid http code for error response, returned code from service is: ' + statusCode })
+        }
         var result = {
             code: statusCode,
             message: errorMessage != "" ? errorMessage : "",
             ...data,
-            errors: {},
+            errors: errorList,
             path: req.method + ':' + req.path
         }
         if (statusCode >= 500) {
@@ -87,7 +92,6 @@ var ApiResponse = {
                 result.message = "Server Error"
                 result.type = "SERVER_ERROR"
                 result.detail = "something wrong"
-                result.errors = {}
             }
         }
 
@@ -102,11 +106,11 @@ const ApiExec = async (service: IService, input: any, req: Request, res: Respons
         if (service.transaction === true) {
             await db.transaction(async (trx: any) => {
                 const result = await ApiCall(service, input, trx)
-                return ApiResponse.success(res, result)
+                return ApiResponse.success(res, result, result.code || 200)
             })
         } else {
             const result = await ApiCall(service, input)
-            return ApiResponse.success(res, result)
+            return ApiResponse.success(res, result, result.code || 200)
         }
     } catch (err) {
         if (err instanceof ApiException) {
@@ -163,7 +167,7 @@ const beforeMiddlewareExec = (req: Request, service: IService, inputData: any, g
     return gmInstance
 }
 
-/** execute before middleware */
+/** execute after middleware */
 const afterMiddlewareExec = (req: Request, service: IService, inputData: any, gmInstance: IGmInstance[]) => {
     gmInstance.forEach(({ instance }) => {
         try {
