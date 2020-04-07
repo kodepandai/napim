@@ -69,8 +69,7 @@ var ApiResponse = {
         if (code >= 300) {
             throw new ApiException('invalid http code', {}, 500, { type: 'INVALID_HTTP_CODE', detail: 'you must return valid http code for success response, returned code from service is: ' + code })
         }
-        var body = data
-        return res.status(code).json(body);
+        return res.status(code).json(data);
     },
     /**
     * response json error
@@ -106,11 +105,11 @@ const ApiExec = async (service: IService, input: any, req: Request, res: Respons
         if (service.transaction === true) {
             await db.transaction(async (trx: any) => {
                 const result = await ApiCall(service, input, trx)
-                return ApiResponse.success(res, result, result.code || 200)
+                return ApiResponse.success(res, result, result ? (result.code || 200) : 200)
             })
         } else {
             const result = await ApiCall(service, input)
-            return ApiResponse.success(res, result, result.code || 200)
+            return ApiResponse.success(res, result, result ? (result.code || 200) : 200)
         }
     } catch (err) {
         if (err instanceof ApiException) {
