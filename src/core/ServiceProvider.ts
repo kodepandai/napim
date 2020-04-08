@@ -38,7 +38,7 @@ class ApiException {
 /**
  * executing service without middleware, can be used for communicate between services
  */
-const ApiCall = async (service: IService, input: any, trx: any = null) => {
+const ApiCall = async (service: IService, input: any, trx: Knex.Transaction | Knex = db) => {
 
     try {
         const validator = new Validator(input, service.rules, service.customMessages || undefined);
@@ -103,7 +103,7 @@ var ApiResponse = {
 const ApiExec = async (service: IService, input: any, req: Request, res: Response) => {
     try {
         if (service.transaction === true) {
-            await db.transaction(async (trx: any) => {
+            await db.transaction(async (trx: Knex.Transaction) => {
                 const result = await ApiCall(service, input, trx)
                 return ApiResponse.success(res, result, result ? (result.code || 200) : 200)
             })

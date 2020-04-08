@@ -1,4 +1,5 @@
 import { ApiException, db, IService } from '../../../dist/index'
+import Knex from 'knex';
 /**
  * Service Test
  */
@@ -11,8 +12,7 @@ const service: IService = {
         return input;
     },
     process: async function (input, OriginalInput, trx) {
-        let data = await db('users')
-            .transacting(trx)
+        let data = await trx('users')
             .insert({
                 username: 'tes',
                 email: Math.random() * 100 + '@gmail.com',

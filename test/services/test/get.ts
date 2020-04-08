@@ -1,4 +1,6 @@
-import { ApiException, db, IService } from '../../../dist/index'
+import { ApiException, IService, db } from '../../../dist/index'
+import User from '../../model/User';
+import Knex from 'knex';
 /**
  * Service Test
  */
@@ -11,19 +13,31 @@ const service: IService = {
         return input;
     },
     process: async function (input, OriginalInput, trx) {
-        // let data = await db('users')
-        //     .transacting(trx)
+        // contoh pakai objection
+        let data: User = await User
+            .query(trx)
+            .insert({
+                username: 'tesobjection',
+                email: Math.random() * 100 + '@gmail.com',
+                password: 'tes1234'
+            })
+        if (data.id > 20) {
+            throw new ApiException('maksimal user hanya 20', {}, 400)
+
+        }
+
+        // // contoh pakai knex
+        // let data = await trx('users')
         //     .insert({
-        //         username: 'tes',
+        //         username: 'tesobjection',
         //         email: Math.random() * 100 + '@gmail.com',
-        //         password: 'tes'
+        //         password: 'tes1234'
         //     })
-        // console.log('data[0] adalah', data[0]);
 
         // if (data[0] > 20) {
-        //     throw new ApiException('error ceritanya')
+        //     throw new ApiException('maksimal user hanya 20', {}, 400)
         // }
-        return await db('users').select('*')
+        return data
     },
     rules: {
 

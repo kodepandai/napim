@@ -1,5 +1,6 @@
 import { Request } from 'express'
 import { TNext, Tmethod } from './types'
+import Knex from 'knex'
 export interface IKeyVal {
     [key: string]: any
 }
@@ -18,8 +19,8 @@ export interface IService {
     method?: Tmethod[],
     transaction: boolean,
     auth?: boolean,
-    prepare: (input: any | any[], tsx?: any) => any,
-    process: (input: any, originalInput: any, tsx?: any) => any,
+    prepare: (input: any | any[], trx: Knex | Knex.Transaction) => any,
+    process: (input: any, originalInput: any, trx: Knex | Knex.Transaction) => any,
     rules: object,
     customMessages?: object | undefined
 }
