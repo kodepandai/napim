@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
+    "watch": "tsc -w & nodemon -q -w dist dist/index.js",
     "build": "rm -rf dist && tsc",
     "build-test": "cd test && rm -rf dist_test && tsc && cd ..",
     "dev": "nodemon dist_test/index.js",

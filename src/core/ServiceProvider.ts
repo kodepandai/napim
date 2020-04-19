@@ -128,7 +128,7 @@ const ApiService = (service: IService) => ({
 
         // Global Middleware 
         try {
-            var gmInstance = beforeMiddlewareExec(req, service, inputData, globalMiddleware)
+            var gmInstance = await beforeMiddlewareExec(req, service, inputData, globalMiddleware)
             await ApiExec(service, inputData, req, res);
             afterMiddlewareExec(req, service, inputData, gmInstance)
         } catch (err) {
@@ -139,9 +139,10 @@ const ApiService = (service: IService) => ({
 })
 
 /** execute before middleware */
-const beforeMiddlewareExec = (req: Request, service: IService, inputData: any, globalMiddleware: any[]) => {
+const beforeMiddlewareExec = async (req: Request, service: IService, inputData: any, globalMiddleware: any[]) => {
     let gmInstance: IGmInstance[] = []
-    globalMiddleware.forEach((gmName) => {
+    for (let i = 0; i < globalMiddleware.length; i++) {
+        let gmName = globalMiddleware[i]
         try {
             let instance = require(middlewarePath + '/' + gmName)
             var gm = instance.default || instance
@@ -152,7 +153,7 @@ const beforeMiddlewareExec = (req: Request, service: IService, inputData: any, g
             }, 500, { type: "MIDDLEWARE_NOT_FOUND", detail: "module middleware with name " + gmName + " not found" })
         }
         try {
-            gm.before(req, service, inputData, (newInput: any) => {
+            await gm.before(req, service, inputData, (newInput: any) => {
                 inputData = newInput
             })
         } catch (err) {
@@ -161,8 +162,7 @@ const beforeMiddlewareExec = (req: Request, service: IService, inputData: any, g
             }
             throw new ApiException(err.message, { middleware_path: middlewarePath + '/' + gmName }, 500, { detail: 'error when executing before middleware', type: 'MIDDLEWARE_BEFORE_FAIL' })
         }
-
-    })
+    }
     return gmInstance
 }
 
