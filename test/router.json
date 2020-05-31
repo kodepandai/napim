@@ -1,38 +1,36 @@
 [
-    {
-        "tag": "default",
-        "prefix": "/api/v1",
-        "middleware": [
-            "auth"
-        ],
-        "get": [
-            {
-                "path": "/test/get",
-                "service": "/test/get"
-            }
-        ],
-        "post": [
-            {
-                "path": "/test/post",
-                "service": "/test/post"
-            }
-        ]
-    },
-    {
-        "tag": "guest",
-        "prefix": "/api/v1/guest",
-        "middleware": [],
-        "get": [
-            {
-                "path": "/test/get",
-                "service": "/test/get"
-            }
-        ],
-        "post": [
-            {
-                "path": "/test/post",
-                "service": "/test/post"
-            }
-        ]
-    }
+  {
+    "tag": "default",
+    "prefix": "/api/v1",
+    "middleware": ["auth"],
+    "get": [
+      {
+        "path": "/test/get",
+        "service": "/test/get"
+      }
+    ],
+    "post": [
+      {
+        "path": "/test/post",
+        "service": "/test/post"
+      }
+    ]
+  },
+  {
+    "tag": "guest",
+    "prefix": "/api/v1/guest",
+    "middleware": ["test"],
+    "get": [
+      {
+        "path": "/test/get",
+        "service": "/test/get"
+      }
+    ],
+    "post": [
+      {
+        "path": "/test/post",
+        "service": "/test/post"
+      }
+    ]
+  }
 ]
