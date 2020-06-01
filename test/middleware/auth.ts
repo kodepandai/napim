@@ -1,12 +1,14 @@
-import { IMiddleware, ApiResponse, ApiException } from "../../dist/index";
+import { IMiddleware, ApiException } from "../../dist/index";
 const jwt = require("jsonwebtoken");
 const auth: IMiddleware = (req, res, next) => {
+  console.log("mid auth");
+
   const token = req.headers.Authorization || req.headers.authorization;
+  return next();
   if (!token) {
     throw new ApiException("Token not found", {}, 401, {
       type: "TOKEN_NOT_FOUND",
-      detail:
-        "this request must include a JWT token in the header.Authorization",
+      detail: req.session,
     });
   }
   try {
@@ -19,7 +21,6 @@ const auth: IMiddleware = (req, res, next) => {
       detail: "your provided token is invalid or expired",
     });
   }
-  next();
 };
 
 export default auth;

@@ -19,7 +19,7 @@
   {
     "tag": "guest",
     "prefix": "/api/v1/guest",
-    "middleware": ["test"],
+    "middleware": ["test", "auth"],
     "get": [
       {
         "path": "/test/get",

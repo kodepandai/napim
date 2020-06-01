@@ -38,7 +38,7 @@ const service: IService = {
     //     throw new ApiException('maksimal user hanya 20', {}, 400)
     // }
     // throw new ApiException("error aja", {}, 200);
-    return "GET OK";
+    return input;
   },
   rules: {},
 };

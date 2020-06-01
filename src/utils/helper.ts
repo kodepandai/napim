@@ -14,7 +14,7 @@ export const parseError = (req: Request, err: ApiException) => ({
   path: req.method + ":" + req.path,
 });
 
-export const handleError = (req: Request, res: Response, err: Error) => {
+export const handleError = (req: Request, res: Response, err: any) => {
   if (err instanceof ApiException) {
     if (err.errorCode >= 500) {
       Log.error(parseError(req, err));

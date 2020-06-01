@@ -32,8 +32,9 @@ export interface IErrorData {
   type: string;
   detail: string;
 }
-interface ReqExtended extends Request {
+export interface ReqExtended extends Request {
   session?: any;
+  file?: any;
 }
 export interface IMiddleware {
   (req: ReqExtended, res: Response, next: NextFunction): void;

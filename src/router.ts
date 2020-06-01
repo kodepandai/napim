@@ -21,54 +21,48 @@ let router: Router = Router();
 const routeExec = (routes: IKeyVal, method: Tmethod, middleware: string[]) => {
   routes[method].forEach((r: IRoute) => {
     let mds: any[] = [];
-    let mInstance: any;
-    middleware.map((m: string) => {
+    for (let i = 0; i < middleware.length; i++) {
       try {
-        mInstance = require(middlewarePath + "/" + m);
+        let mInstance = require(middlewarePath + "/" + middleware[i]);
+
         mInstance = (mInstance.default || mInstance) as IMiddleware;
+        mds[i] = async (req: Request, res: Response, next: NextFunction) => {
+          try {
+            await mInstance(req, res, next);
+          } catch (err) {
+            handleError(req, res, err);
+          }
+        };
       } catch (error) {
-        let message = "middleware " + m + " not found, check your router.json";
+        let message =
+          "middleware " + middleware[i] + " not found, check your router.json";
         Console.error(message);
         Log.fatal(message);
         setTimeout(() => {
           process.exit(1);
         }, 500);
       }
-      mds.push((req: Request, res: Response, next: NextFunction) => {
+    }
+    router[method](routes.prefix + r.path, [
+      ...mds,
+      async (req: Request, res: Response) => {
+        let service: IService;
         try {
-          mInstance(req, res, next);
+          let instance = require(servicePath + r.service);
+          service = instance.default || instance;
+        } catch (err) {
+          throw new ApiException("Service Not Found", {}, 404, {
+            type: "SERVICE_NOT_FOUND",
+            detail: "service " + r.service + " not found",
+          });
+        }
+        try {
+          await serviceExec(req, res, method, service);
         } catch (err) {
           handleError(req, res, err);
         }
-      });
-    });
-    try {
-      router[method](routes.prefix + r.path, [
-        ...mds,
-        async (req: Request, res: Response) => {
-          let service: IService;
-          try {
-            let instance = require(servicePath + r.service);
-            service = instance.default || instance;
-          } catch (err) {
-            throw new ApiException("Service Not Found", {}, 404, {
-              type: "SERVICE_NOT_FOUND",
-              detail: "service " + r.service + " not found",
-            });
-          }
-          try {
-            await serviceExec(req, res, method, service);
-          } catch (err) {
-            handleError(req, res, err);
-          }
-        },
-      ]);
-    } catch (err) {
-      Log.fatal(err.stack);
-      setTimeout(() => {
-        process.exit(1);
-      }, 500);
-    }
+      },
+    ]);
   });
 };
 

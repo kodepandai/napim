@@ -3,7 +3,7 @@ import Log from "../utils/logger";
 import { Validator } from "node-input-validator";
 import Knex from "knex";
 import { Response, Request } from "express";
-import { IService, IErrorData } from "../utils/interface";
+import { IService, IErrorData, ReqExtended } from "../utils/interface";
 import { Tmethod } from "../utils/types";
 import * as Console from "../utils/console";
 import { parseError } from "../utils/helper";
@@ -149,15 +149,15 @@ const ApiExec = async (
   }
 };
 
-interface RequestExtend extends Request {
-  file?: any;
-}
 const ApiService = (service: IService) => ({
   /** run service */
-  run: async (req: RequestExtend, res: Response, method: Tmethod = "get") => {
+  run: async (req: ReqExtended, res: Response, method: Tmethod = "get") => {
     let inputData = method == "get" ? req.query : req.body;
     if (req.file) {
       inputData.file = req.file;
+    }
+    if (req.session) {
+      inputData.session = req.session;
     }
     await ApiExec(service, inputData, req, res);
   },
