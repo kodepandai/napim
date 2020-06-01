@@ -1,6 +1,11 @@
-import { Request, Response, Router } from "express";
+import { Request, Response, Router, NextFunction } from "express";
 import { routePath, servicePath, middlewarePath } from "./utils/path";
-import { ApiResponse, serviceExec } from "./core/ServiceProvider";
+import {
+  ApiResponse,
+  serviceExec,
+  Log,
+  ApiException,
+} from "./core/ServiceProvider";
 import {
   IRoute,
   IRoutes,
@@ -10,6 +15,7 @@ import {
 } from "./utils/interface";
 import { Tmethod } from "./utils/types";
 import * as Console from "./utils/console";
+import { handleError, parseError } from "./utils/helper";
 
 let router: Router = Router();
 const routeExec = (routes: IKeyVal, method: Tmethod, middleware: string[]) => {
@@ -21,26 +27,48 @@ const routeExec = (routes: IKeyVal, method: Tmethod, middleware: string[]) => {
         mInstance = require(middlewarePath + "/" + m);
         mInstance = (mInstance.default || mInstance) as IMiddleware;
       } catch (error) {
-        Console.error("middleware " + m + " not found");
+        let message = "middleware " + m + " not found, check your router.json";
+        Console.error(message);
+        Log.fatal(message);
+        setTimeout(() => {
+          process.exit(1);
+        }, 500);
       }
-      mds.push(mInstance);
-    });
-    router[method](routes.prefix + r.path, [
-      ...mds,
-      (req: Request, res: Response) => {
-        let service: IService;
+      mds.push((req: Request, res: Response, next: NextFunction) => {
         try {
-          let instance = require(servicePath + r.service);
-          service = instance.default || instance;
+          mInstance(req, res, next);
         } catch (err) {
-          return ApiResponse.error(req, res, "Service Not Found", {}, 404, {
-            type: "SERVICE_NOT_FOUND",
-            detail: "service " + r.service + " not found",
-          });
+          handleError(req, res, err);
         }
-        serviceExec(req, res, method, service);
-      },
-    ]);
+      });
+    });
+    try {
+      router[method](routes.prefix + r.path, [
+        ...mds,
+        async (req: Request, res: Response) => {
+          let service: IService;
+          try {
+            let instance = require(servicePath + r.service);
+            service = instance.default || instance;
+          } catch (err) {
+            throw new ApiException("Service Not Found", {}, 404, {
+              type: "SERVICE_NOT_FOUND",
+              detail: "service " + r.service + " not found",
+            });
+          }
+          try {
+            await serviceExec(req, res, method, service);
+          } catch (err) {
+            handleError(req, res, err);
+          }
+        },
+      ]);
+    } catch (err) {
+      Log.fatal(err.stack);
+      setTimeout(() => {
+        process.exit(1);
+      }, 500);
+    }
   });
 };
 
@@ -65,9 +93,11 @@ router.get("/", function (req: Request, res: Response) {
 });
 
 router.all("*", function (req: Request, res: Response) {
-  ApiResponse.error(req, res, "Invalid route path", {}, 404, {
+  let err = new ApiException("Invalid route path", {}, 404, {
     type: "ROUTE_NOT_FOUND",
     detail: "no service can handle this route, check router for detail",
   });
+  Log.error(parseError(req, err));
+  ApiResponse.error(req, res, err);
 });
 export default router;

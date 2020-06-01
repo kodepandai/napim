@@ -6,6 +6,7 @@ import { Response, Request } from "express";
 import { IService, IErrorData } from "../utils/interface";
 import { Tmethod } from "../utils/types";
 import * as Console from "../utils/console";
+import { parseError } from "../utils/helper";
 let knexFile: any;
 try {
   knexFile = require(path.resolve(process.cwd(), "knexfile.js"));
@@ -67,8 +68,7 @@ const ApiCall = async (
     }
     var inputNew = await service.prepare(input, trx);
     const inputProcess = inputNew == null ? input : inputNew;
-    const result = await service.process(inputProcess, input, trx);
-    return result;
+    return await service.process(inputProcess, input, trx);
   } catch (err) {
     throw err;
   }
@@ -89,38 +89,26 @@ var ApiResponse = {
           code,
       });
       Log.error(parseError(req, err));
-      throw err;
+      return res.status(500).json(parseError(req, err));
     }
     return res.status(code).json(data);
   },
   /**
    * response json error
    */
-  error: (
-    req: Request,
-    res: Response,
-    errorMessage: string = "",
-    errorList: object | any[] = {},
-    errorCode: number = 500,
-    errorData: IErrorData = { type: "SERVER_ERROR", detail: "something wrong" }
-  ) => {
-    if (errorCode < 300) {
-      let err = new ApiException("invalid http response code", {}, 500, {
+  error: (req: Request, res: Response, err: ApiException) => {
+    if (err.errorCode < 300) {
+      let newErr = new ApiException("invalid http response code", {}, 500, {
         type: "INVALID_HTTP_CODE",
         detail:
           "you must return valid http code for error response, returned code is: " +
-          errorCode,
+          err.errorCode,
       });
-      Log.error(parseError(req, err));
-      throw err;
+      Log.error(parseError(req, newErr));
+      return res.status(500).json(parseError(req, err));
     }
-    var result = parseError(req, <ApiException>{
-      errorCode,
-      errorData,
-      errorList,
-      errorMessage,
-    });
-    if (errorCode >= 500) {
+    var result = parseError(req, err);
+    if (err.errorCode >= 500) {
       if (process.env.DEBUG == "false") {
         result.message = "Server Error";
         result.type = "SERVER_ERROR";
@@ -128,7 +116,7 @@ var ApiResponse = {
       }
     }
 
-    return res.status(errorCode).json(result);
+    return res.status(err.errorCode).json(result);
   },
 };
 /**
@@ -140,46 +128,27 @@ const ApiExec = async (
   req: Request,
   res: Response
 ) => {
-  try {
-    if (service.transaction === true) {
-      await db.transaction(async (trx: Knex.Transaction) => {
-        const result = await ApiCall(service, input, trx);
-        return ApiResponse.success(
-          req,
-          res,
-          result,
-          result ? result.code || 200 : 200
-        );
-      });
-    } else {
-      const result = await ApiCall(service, input);
+  if (service.transaction === true) {
+    await db.transaction(async (trx: Knex.Transaction) => {
+      const result = await ApiCall(service, input, trx);
       return ApiResponse.success(
         req,
         res,
         result,
         result ? result.code || 200 : 200
       );
-    }
-  } catch (err) {
-    if (err instanceof ApiException) {
-      if (err.errorCode >= 500) {
-        Log.error(parseError(req, err));
-      }
-      return ApiResponse.error(
-        req,
-        res,
-        err.errorMessage,
-        err.errorList,
-        err.errorCode,
-        err.errorData
-      );
-    } else {
-      //error dari server
-      Log.fatal(err.stack);
-      return ApiResponse.error(req, res, err.message);
-    }
+    });
+  } else {
+    const result = await ApiCall(service, input);
+    return ApiResponse.success(
+      req,
+      res,
+      result,
+      result ? result.code || 200 : 200
+    );
   }
 };
+
 interface RequestExtend extends Request {
   file?: any;
 }
@@ -190,22 +159,11 @@ const ApiService = (service: IService) => ({
     if (req.file) {
       inputData.file = req.file;
     }
-    try {
-      await ApiExec(service, inputData, req, res);
-    } catch (err) {
-      return ApiResponse.error(
-        req,
-        res,
-        err.errorMessage,
-        err.errorList,
-        err.errorCode,
-        err.errorData
-      );
-    }
+    await ApiExec(service, inputData, req, res);
   },
 });
 
-const serviceExec = (
+const serviceExec = async (
   req: Request,
   res: Response,
   method: Tmethod,
@@ -213,31 +171,20 @@ const serviceExec = (
 ) => {
   if (service.method) {
     if (!service.method.includes(method)) {
-      return ApiResponse.error(req, res, "Method not allowed", {}, 405, {
+      throw new ApiException("Method not allowed", {}, 405, {
         detail: "allowed method:  " + service.method.join(", "),
         type: "METHOD_NOT_ALLOWED",
       });
     }
   }
-  try {
-    if (method != "get") {
-      req.body = { ...req.body, ...req.params };
-    } else {
-      req.query = { ...req.query, ...req.params };
-    }
-    return ApiService(service).run(req, res, method);
-  } catch (err) {
-    return ApiResponse.error(req, res, err.message);
+  if (method != "get") {
+    req.body = { ...req.body, ...req.params };
+  } else {
+    req.query = { ...req.query, ...req.params };
   }
+  await ApiService(service).run(req, res, method);
 };
 
-const parseError = (req: Request, err: ApiException) => ({
-  code: err.errorCode || 500,
-  message: err.errorMessage,
-  ...err.errorData,
-  errors: err.errorList,
-  path: req.method + ":" + req.path,
-});
 export {
   ApiCall,
   ApiException,

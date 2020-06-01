@@ -37,8 +37,8 @@ const service: IService = {
     // if (data[0] > 20) {
     //     throw new ApiException('maksimal user hanya 20', {}, 400)
     // }
-    throw new ApiException("error aja", {}, 200);
-    return "tes";
+    // throw new ApiException("error aja", {}, 200);
+    return "GET OK";
   },
   rules: {},
 };
