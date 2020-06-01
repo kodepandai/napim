@@ -80,14 +80,16 @@ var ApiResponse = {
   /**
    * response json success
    */
-  success: (res: Response, data: object, code: number = 200) => {
+  success: (req: Request, res: Response, data: object, code: number = 200) => {
     if (code >= 300) {
-      throw new ApiException("invalid http code", {}, 500, {
+      let err = new ApiException("invalid http response code", {}, 500, {
         type: "INVALID_HTTP_CODE",
         detail:
-          "you must return valid http code for success response, returned code from service is: " +
+          "you must return valid http code for success response, returned code is: " +
           code,
       });
+      Log.error(parseError(req, err));
+      throw err;
     }
     return res.status(code).json(data);
   },
@@ -99,26 +101,26 @@ var ApiResponse = {
     res: Response,
     errorMessage: string = "",
     errorList: object | any[] = {},
-    statusCode: number = 500,
-    data: IErrorData = { type: "SERVER_ERROR", detail: "something wrong" }
+    errorCode: number = 500,
+    errorData: IErrorData = { type: "SERVER_ERROR", detail: "something wrong" }
   ) => {
-    if (statusCode < 300) {
-      throw new ApiException("invalid http code", {}, 500, {
+    if (errorCode < 300) {
+      let err = new ApiException("invalid http response code", {}, 500, {
         type: "INVALID_HTTP_CODE",
         detail:
-          "you must return valid http code for error response, returned code from service is: " +
-          statusCode,
+          "you must return valid http code for error response, returned code is: " +
+          errorCode,
       });
+      Log.error(parseError(req, err));
+      throw err;
     }
-    var result = {
-      code: statusCode,
-      message: errorMessage != "" ? errorMessage : "",
-      ...data,
-      errors: errorList,
-      path: req.method + ":" + req.path,
-    };
-    if (statusCode >= 500) {
-      Log.error({ ...result }); //clone result sebelum dirubah
+    var result = parseError(req, <ApiException>{
+      errorCode,
+      errorData,
+      errorList,
+      errorMessage,
+    });
+    if (errorCode >= 500) {
       if (process.env.DEBUG == "false") {
         result.message = "Server Error";
         result.type = "SERVER_ERROR";
@@ -126,7 +128,7 @@ var ApiResponse = {
       }
     }
 
-    return res.status(statusCode).json(result);
+    return res.status(errorCode).json(result);
   },
 };
 /**
@@ -143,6 +145,7 @@ const ApiExec = async (
       await db.transaction(async (trx: Knex.Transaction) => {
         const result = await ApiCall(service, input, trx);
         return ApiResponse.success(
+          req,
           res,
           result,
           result ? result.code || 200 : 200
@@ -151,6 +154,7 @@ const ApiExec = async (
     } else {
       const result = await ApiCall(service, input);
       return ApiResponse.success(
+        req,
         res,
         result,
         result ? result.code || 200 : 200
@@ -158,6 +162,9 @@ const ApiExec = async (
     }
   } catch (err) {
     if (err instanceof ApiException) {
+      if (err.errorCode >= 500) {
+        Log.error(parseError(req, err));
+      }
       return ApiResponse.error(
         req,
         res,
@@ -168,6 +175,7 @@ const ApiExec = async (
       );
     } else {
       //error dari server
+      Log.fatal(err.stack);
       return ApiResponse.error(req, res, err.message);
     }
   }
@@ -223,4 +231,20 @@ const serviceExec = (
   }
 };
 
-export { ApiCall, ApiException, ApiResponse, ApiService, db, serviceExec };
+const parseError = (req: Request, err: ApiException) => ({
+  code: err.errorCode || 500,
+  message: err.errorMessage,
+  ...err.errorData,
+  errors: err.errorList,
+  path: req.method + ":" + req.path,
+});
+export {
+  ApiCall,
+  ApiException,
+  ApiResponse,
+  ApiService,
+  db,
+  serviceExec,
+  Console,
+  Log,
+};

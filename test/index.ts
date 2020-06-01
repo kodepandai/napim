@@ -1,2 +1,3 @@
-import * as napim from "../dist/index"
-napim.start()
+import { start, Log } from "../dist/index";
+start();
+Log.info("napim started");

@@ -1,23 +1,17 @@
-import { logPath } from './path'
-import moment from 'moment'
-import fs from 'fs'
+import { logPath } from "./path";
 
-if (!fs.existsSync(logPath)) {
-    fs.mkdirSync(logPath)
+const opts = {
+  logDirectory: logPath, // NOTE: folder must exist and be writable...
+  fileNamePattern: "<DATE>.log",
+  dateFormat: "YYYY.MM.DD",
+};
+declare interface Logger {
+  trace: (data: any) => void;
+  debug: (data: any) => void;
+  error: (data: any) => void;
+  warn: (data: any) => void;
+  fatal: (data: any) => void;
+  info: (data: any) => void;
 }
-
-const error = (error_data: object): void => {
-    let time = moment().format('YYYY-MM-DD')
-    let error_file = logPath + '/' + time + '-error.json'
-    try {
-        require(error_file)
-    } catch (error) {
-        fs.writeFileSync(error_file, "[]")
-    }
-    let last = require(error_file)
-    error_data = { time: new Date(), error: error_data }
-    last.push(error_data)
-    fs.writeFile(error_file, JSON.stringify(last, null, 2), () => { })
-}
-
-export default { error }
+const log: Logger = require("simple-node-logger").createRollingFileLogger(opts);
+export default log;
