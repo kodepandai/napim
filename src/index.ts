@@ -1,17 +1,20 @@
 require("dotenv").config();
 import http from "http";
 import Log from "./utils/logger";
-import express, { Application } from "express";
-import router from "./router";
+import express, { Application, Router } from "express";
+import { createRouter, injectModule } from "./router";
 import * as Console from "./utils/console";
 
 //start napim server
 const port: string | number = process.env.PORT || 3000;
+const app: Application = express();
+/**
+ * Start Node API Maker
+ */
 const start = (): void => {
   try {
-    const app: Application = express();
     app.use(express.json());
-    app.use("", router);
+    app.use("", createRouter());
     const server: http.Server = http.createServer(app);
     server.listen(port);
     server.on("error", onError);
@@ -52,7 +55,7 @@ const onListening = (server: http.Server) => {
   Console.success("Listening on " + bind);
 };
 
-export { start };
+export { app, start, injectModule };
 export { Request, Response } from "express";
 export * from "./core/ServiceProvider";
 export * from "./utils/interface";

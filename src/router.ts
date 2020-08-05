@@ -17,6 +17,14 @@ import { Tmethod } from "./utils/types";
 import * as Console from "./utils/console";
 import { handleError, parseError } from "./utils/helper";
 
+let _modules: any[] = []
+/**
+ * Inject Napim Module
+ * @param modules list modules will be injected
+ */
+export const injectModule = (modules: any[]) => {
+  _modules = modules
+}
 let router: Router = Router();
 const routeExec = (routes: IKeyVal, method: Tmethod, middleware: string[]) => {
   routes[method].forEach((r: IRoute) => {
@@ -67,31 +75,38 @@ const routeExec = (routes: IKeyVal, method: Tmethod, middleware: string[]) => {
 };
 
 const routers = require(routePath);
-routers.forEach((routes: IRoutes) => {
-  if (routes.get) {
-    routeExec(routes, "get", routes.middleware);
-  }
-  if (routes.post) {
-    routeExec(routes, "post", routes.middleware);
-  }
-  if (routes.put) {
-    routeExec(routes, "put", routes.middleware);
-  }
-  if (routes.delete) {
-    routeExec(routes, "delete", routes.middleware);
-  }
-});
 
-router.get("/", function (req: Request, res: Response) {
-  res.status(200).send("Node API Maker running beautifully");
-});
-
-router.all("*", function (req: Request, res: Response) {
-  let err = new ApiException("Invalid route path", {}, 404, {
-    type: "ROUTE_NOT_FOUND",
-    detail: "no service can handle this route, check router for detail",
+// inject modules
+const createRouter = () => {
+  _modules.length > 0 && Console.info('injecting module...');
+  Log.info(['injecting module', _modules])
+  routers.forEach((routes: IRoutes) => {
+    if (routes.get) {
+      routeExec(routes, "get", routes.middleware);
+    }
+    if (routes.post) {
+      routeExec(routes, "post", routes.middleware);
+    }
+    if (routes.put) {
+      routeExec(routes, "put", routes.middleware);
+    }
+    if (routes.delete) {
+      routeExec(routes, "delete", routes.middleware);
+    }
   });
-  Log.error(parseError(req, err));
-  ApiResponse.error(req, res, err);
-});
-export default router;
+
+  router.get("/", function (req: Request, res: Response) {
+    res.status(200).send("Node API Maker running beautifully");
+  });
+
+  router.all("*", function (req: Request, res: Response) {
+    let err = new ApiException("Invalid route path", {}, 404, {
+      type: "ROUTE_NOT_FOUND",
+      detail: "no service can handle this route, check router for detail",
+    });
+    Log.error(parseError(req, err));
+    ApiResponse.error(req, res, err);
+  });
+  return router
+}
+export { router, createRouter };

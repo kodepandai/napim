@@ -1,3 +1,12 @@
-import { start, Log } from "../dist/index";
+import { start, Log, injectModule } from "../dist/index";
+import { router } from "../dist/router";
+const moduleA = 'module A'
+const moduleB = 'module B'
+injectModule([
+    moduleA,
+    moduleB
+])
+router.get('/heloo', (req, res) => {
+    res.json('hello world')
+})
 start();
-Log.info("napim started");
