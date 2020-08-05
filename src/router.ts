@@ -78,7 +78,7 @@ const routers = require(routePath);
 
 // inject modules
 const createRouter = () => {
-  _modules.length > 0 && Console.info('injecting module...');
+  _modules.length > 0 && Console.info('Injecting module...');
   Log.info(['injecting module', _modules])
   routers.forEach((routes: IRoutes) => {
     if (routes.get) {
