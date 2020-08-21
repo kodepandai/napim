@@ -125,7 +125,7 @@ var ApiResponse = {
 const ApiExec = async (
   service: IService,
   input: any,
-  req: Request,
+  req: ReqExtended,
   res: Response
 ) => {
   if (service.transaction === true) {
@@ -164,7 +164,7 @@ const ApiService = (service: IService) => ({
 });
 
 const serviceExec = async (
-  req: Request,
+  req: ReqExtended,
   res: Response,
   method: Tmethod,
   service: IService

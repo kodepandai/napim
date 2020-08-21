@@ -12,6 +12,7 @@ import {
   IKeyVal,
   IService,
   IMiddleware,
+  ReqExtended,
 } from "./utils/interface";
 import { Tmethod } from "./utils/types";
 import * as Console from "./utils/console";
@@ -53,7 +54,7 @@ const routeExec = (routes: IKeyVal, method: Tmethod, middleware: string[]) => {
     }
     router[method](routes.prefix + r.path, [
       ...mds,
-      async (req: Request, res: Response) => {
+      async (req: ReqExtended, res: Response) => {
         let service: IService;
         try {
           let instance = require(servicePath + r.service);
@@ -79,7 +80,6 @@ const routers = require(routePath);
 // inject modules
 const createRouter = () => {
   _modules.length > 0 && Console.info('Injecting module...');
-  Log.info(['injecting module', _modules])
   routers.forEach((routes: IRoutes) => {
     if (routes.get) {
       routeExec(routes, "get", routes.middleware);

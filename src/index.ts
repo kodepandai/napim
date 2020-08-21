@@ -59,3 +59,4 @@ export { app, start, injectModule, express };
 export { Request, Response } from "express";
 export * from "./core/ServiceProvider";
 export * from "./utils/interface";
+export * from './utils/path'

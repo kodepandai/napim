@@ -34,7 +34,7 @@ export interface IErrorData {
 }
 export interface ReqExtended extends Request {
   session?: any;
-  file?: any;
+  file: any;
 }
 export interface IMiddleware {
   (req: ReqExtended, res: Response, next: NextFunction): void;
