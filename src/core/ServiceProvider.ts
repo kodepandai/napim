@@ -176,6 +176,7 @@ const ApiService = (service: IService) => ({
     if (req.session) {
       inputData.session = req.session;
     }
+    inputData.method = method
     await ApiExec(service, inputData, req, res);
   },
 });
