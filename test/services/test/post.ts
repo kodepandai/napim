@@ -1,5 +1,4 @@
 import { ApiException, db, IService } from '../../../dist/index'
-import Knex from 'knex';
 /**
  * Service Test
  */
