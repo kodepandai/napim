@@ -18,10 +18,11 @@ export interface IService {
   method?: Tmethod[];
   transaction: boolean;
   auth?: boolean;
-  prepare: (input: any | any[], trx: any) => any;
+  prepare: (input: any | any[], method: Tmethod, trx: any) => any;
   process: (
     input: any,
     originalInput: any,
+    method: Tmethod,
     trx: any
   ) => any;
   rules: object;
@@ -32,8 +33,7 @@ export interface IErrorData {
   detail: string;
 }
 export interface ReqExtended extends Request {
-  session?: any;
-  file: any;
+  input?: any
 }
 export interface IMiddleware {
   (req: ReqExtended, res: Response, next: NextFunction): void;

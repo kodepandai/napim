@@ -2,7 +2,7 @@ require("dotenv").config();
 import http from "http";
 import Log from "./utils/logger";
 import express, { Application } from "express";
-import { createRouter, injectModule } from "./router";
+import { createRouter, router, injectModule } from "./router";
 import * as Console from "./utils/console";
 
 const port: string | number = process.env.PORT || 3000;
@@ -55,7 +55,7 @@ const onListening = (server: http.Server) => {
   Console.success("Listening on " + bind);
 };
 
-export { app, start, injectModule, express };
+export { app, start, injectModule, express, router };
 export { Request, Response } from "express";
 export * from "./core/ServiceProvider";
 export * from "./utils/interface";

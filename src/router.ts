@@ -35,7 +35,8 @@ const routeExec = (routes: IKeyVal, method: Tmethod, middleware: string[]) => {
         let mInstance = require(middlewarePath + "/" + middleware[i]);
 
         mInstance = (mInstance.default || mInstance) as IMiddleware;
-        mds[i] = async (req: Request, res: Response, next: NextFunction) => {
+        mds[i] = async (req: ReqExtended, res: Response, next: NextFunction) => {
+          if (!req.input) req.input = {}
           try {
             await mInstance(req, res, next);
           } catch (err) {

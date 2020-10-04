@@ -1,5 +1,4 @@
 import { ApiException, IService, db } from "../../../dist/index";
-import User from "../../model/mongo/User";
 /**
  * Service Test
  */
@@ -11,8 +10,8 @@ const service: IService = {
   prepare: async function (input) {
     return input;
   },
-  process: async function (input, OriginalInput, trx) {
-    return await User.find()
+  process: async function (input, OriginalInput, method, trx) {
+    return input
   },
   rules: {},
 };

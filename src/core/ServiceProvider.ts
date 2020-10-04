@@ -67,6 +67,7 @@ class ApiException {
 const ApiCall = async (
   service: IService,
   input: any,
+  method: Tmethod,
   trx: any = db
 ) => {
   try {
@@ -83,9 +84,9 @@ const ApiCall = async (
         detail: "Unprocessable Entity",
       });
     }
-    var inputNew = await service.prepare(input, trx);
+    var inputNew = await service.prepare(input, method, trx);
     const inputProcess = inputNew == null ? input : inputNew;
-    return await service.process(inputProcess, input, trx);
+    return await service.process(inputProcess, input, method, trx);
   } catch (err) {
     throw err;
   }
@@ -143,11 +144,12 @@ const ApiExec = async (
   service: IService,
   input: any,
   req: ReqExtended,
-  res: Response
+  res: Response,
+  method: Tmethod
 ) => {
   if (service.transaction === true && process.env.DB_DRIVER != 'mongo') { //TODO: suport mongo transaction
     await db.transaction(async (trx: any) => {
-      const result = await ApiCall(service, input, trx);
+      const result = await ApiCall(service, input, method, trx);
       return ApiResponse.success(
         req,
         res,
@@ -156,7 +158,7 @@ const ApiExec = async (
       );
     });
   } else {
-    const result = await ApiCall(service, input);
+    const result = await ApiCall(service, input, method);
     return ApiResponse.success(
       req,
       res,
@@ -170,14 +172,10 @@ const ApiService = (service: IService) => ({
   /** run service */
   run: async (req: ReqExtended, res: Response, method: Tmethod = "get") => {
     let inputData = method == "get" ? req.query : req.body;
-    if (req.file) {
-      inputData.file = req.file;
+    if (req.input) {
+      inputData = { ...inputData, ...req.input }
     }
-    if (req.session) {
-      inputData.session = req.session;
-    }
-    inputData.method = method
-    await ApiExec(service, inputData, req, res);
+    await ApiExec(service, inputData, req, res, method);
   },
 });
 

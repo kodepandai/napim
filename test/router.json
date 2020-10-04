@@ -2,7 +2,9 @@
   {
     "tag": "default",
     "prefix": "/api/v1",
-    "middleware": ["auth"],
+    "middleware": [
+      "Auth"
+    ],
     "get": [
       {
         "path": "/test/get",
@@ -17,9 +19,12 @@
     ]
   },
   {
-    "tag": "guest",
-    "prefix": "/api/v1/guest",
-    "middleware": ["test", "auth"],
+    "tag": "session",
+    "prefix": "/api/v1/session",
+    "middleware": [
+      "Auth",
+      "Session"
+    ],
     "get": [
       {
         "path": "/test/get",
