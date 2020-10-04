@@ -1,15 +1,16 @@
 {
   "name": "napim",
-  "version": "1.1.0-beta",
+  "version": "1.1.1-beta",
   "description": "Node Api Maker build with express and knex",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "watch": "tsc -w & nodemon -q -w dist dist/index.js",
     "build": "rm -rf dist && tsc",
-    "build-test": "cd test && rm -rf dist_test && tsc && cd ..",
+    "build-test": "rm -rf dist_test & cd test && tsc && cd ..",
     "dev": "nodemon dist_test/index.js",
-    "start": "node dist_test/index.js"
+    "start": "node dist_test/index.js",
+    "version": "auto-changelog -p && git add CHANGELOG.md"
   },
   "repository": {
     "type": "git",
@@ -26,7 +27,7 @@
   "bugs": {
     "url": "https://gitlab.com/axmad386/napim/issues"
   },
-  "homepage": "https://gitlab.com/axmad386/napim#readme",
+  "homepage": "https://github.com/axmad386/napim#readme",
   "dependencies": {
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
@@ -36,8 +37,8 @@
   "devDependencies": {
     "@types/express": "^4.17.4",
     "@types/mongoose": "^5.7.36",
+    "auto-changelog": "^2.2.1",
     "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^8.5.1",
     "knex": "^0.21.6",
     "mongoose": "^5.10.7",
     "mysql": "^2.18.1",
