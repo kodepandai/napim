@@ -7,9 +7,19 @@ import { Tmethod } from "../utils/types";
 import * as Console from "../utils/console";
 import { parseError } from "../utils/helper";
 let DB: any
-let db: any
-if (process.env.DB_DRIVER != 'mongo') {
+let knex: any
+let mongo: any
+let knexExist: boolean
+let mongoExist: boolean
+try {
+  //Check is using knex or not
   DB = require('knex')
+  knexExist = true
+} catch (error) {
+  knexExist = false
+  knex = null
+}
+if (knexExist) {
   let knexFile: any;
   try {
     knexFile = require(path.resolve(process.cwd(), "knexfile.js"));
@@ -23,24 +33,31 @@ if (process.env.DB_DRIVER != 'mongo') {
     );
     process.exit(1);
   }
-  db = DB(knexFile[process.env.DB_ENV || "development"]);
-} else {
-  DB = require('mongoose')
-  DB.connect(<string>process.env.MONGO_URL, {
-    useUnifiedTopology: true,
-    useNewUrlParser: true,
-    user: process.env.MONGO_USER,
-    pass: process.env.MONGO_PASSWORD
-  }).then(() => {
-    Console.success('successfully connected to the mongo database');
-  }).catch((err: Error) => {
-    Console.error(err.message);
-    process.exit();
-  });
+  knex = DB(knexFile[process.env.DB_ENV || "development"]);
 }
+try {
+  // Check is using mongoose or not
+  mongo = require('mongoose')
+  mongoExist = true
+} catch (error) {
+  mongoExist = false
+  mongo = null
+}
+mongoExist && mongo.connect(<string>process.env.MONGO_URL, {
+  useUnifiedTopology: true,
+  useNewUrlParser: true,
+  user: process.env.MONGO_USER,
+  pass: process.env.MONGO_PASSWORD
+}).then(() => {
+  Console.success('successfully connected to the mongo database');
+}).catch((err: Error) => {
+  Console.error(err.message);
+  process.exit();
+});
+
 /**
- * create Exception Instance that will be thrown to client response
- */
+* create Exception Instance that will be thrown to client response
+*/
 class ApiException {
   errorMessage: string;
   errorList: object | any[];
@@ -68,7 +85,7 @@ const ApiCall = async (
   service: IService,
   input: any,
   method: Tmethod,
-  trx: any = db
+  trx: any = knex
 ) => {
   try {
     const validator = new Validator(
@@ -147,8 +164,8 @@ const ApiExec = async (
   res: Response,
   method: Tmethod
 ) => {
-  if (service.transaction === true && process.env.DB_DRIVER != 'mongo') { //TODO: suport mongo transaction
-    await db.transaction(async (trx: any) => {
+  if (service.transaction === true && knexExist) { //TODO: suport mongo transaction
+    await knex.transaction(async (trx: any) => {
       const result = await ApiCall(service, input, method, trx);
       return ApiResponse.success(
         req,
@@ -206,7 +223,8 @@ export {
   ApiException,
   ApiResponse,
   ApiService,
-  db,
+  knex,
+  mongo,
   serviceExec,
   Console,
   Log,
