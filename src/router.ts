@@ -53,21 +53,23 @@ const routeExec = (routes: IKeyVal, method: Tmethod, middleware: string[]) => {
         }, 500);
       }
     }
+    let service: IService;
+    try {
+      let instance = require(servicePath + r.service);
+      service = instance.default || instance;
+    } catch (err) {
+      throw new ApiException("Service Not Found", {}, 404, {
+        type: "SERVICE_NOT_FOUND",
+        detail: "service " + r.service + " not found",
+      });
+    }
+    let localMidd = service.middleware || []
     router[method](routes.prefix + r.path, [
       ...mds,
+      ...localMidd,
       async (req: ReqExtended, res: Response) => {
-        let service: IService;
         try {
-          let instance = require(servicePath + r.service);
-          service = instance.default || instance;
-        } catch (err) {
-          throw new ApiException("Service Not Found", {}, 404, {
-            type: "SERVICE_NOT_FOUND",
-            detail: "service " + r.service + " not found",
-          });
-        }
-        try {
-          await serviceExec(req, res, method, service);
+          await serviceExec(req, res, service);
         } catch (err) {
           handleError(req, res, err);
         }
@@ -90,6 +92,9 @@ const createRouter = () => {
     }
     if (routes.put) {
       routeExec(routes, "put", routes.middleware);
+    }
+    if (routes.patch) {
+      routeExec(routes, "patch", routes.middleware);
     }
     if (routes.delete) {
       routeExec(routes, "delete", routes.middleware);

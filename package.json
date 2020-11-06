@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://gitlab.com/axmad386/napim.git"
+    "url": "git+https://github.com/axmad386/napim.git"
   },
   "keywords": [
     "express",
@@ -25,7 +25,7 @@
   "author": "Akhmad Salafudin",
   "license": "ISC",
   "bugs": {
-    "url": "https://gitlab.com/axmad386/napim/issues"
+    "url": "https://github.com/axmad386/napim/issues"
   },
   "homepage": "https://github.com/axmad386/napim#readme",
   "dependencies": {
@@ -40,7 +40,6 @@
     "auto-changelog": "^2.2.1",
     "bcryptjs": "^2.4.3",
     "knex": "^0.21.6",
-    "mongoose": "^5.10.7",
     "mysql": "^2.18.1",
     "nodemon": "^2.0.2",
     "objection": "^2.2.3",

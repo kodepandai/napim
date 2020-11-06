@@ -15,6 +15,10 @@
       {
         "path": "/test/post",
         "service": "/test/post"
+      },
+      {
+        "path": "/test/post/:id",
+        "service": "/test/post"
       }
     ]
   },

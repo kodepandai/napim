@@ -1,4 +1,6 @@
-import { ApiException, IService, db } from "../../../dist/index";
+import { ApiException, IService } from "../../../dist/index";
+import Session from "../../middleware/Session";
+import Upload from "../../middleware/Upload";
 /**
  * Service Test
  */
@@ -6,11 +8,11 @@ import { ApiException, IService, db } from "../../../dist/index";
 const service: IService = {
   method: ["post", "get"],
   transaction: false,
-  auth: false,
+  middleware: [Upload, Session],
   prepare: async function (input) {
     return input;
   },
-  process: async function (input, OriginalInput, method, trx) {
+  process: async function (input, OriginalInput, trx) {
     return input
   },
   rules: {},

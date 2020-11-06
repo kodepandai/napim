@@ -84,7 +84,6 @@ class ApiException {
 const ApiCall = async (
   service: IService,
   input: any,
-  method: Tmethod,
   trx: any = knex
 ) => {
   try {
@@ -101,9 +100,9 @@ const ApiCall = async (
         detail: "Unprocessable Entity",
       });
     }
-    var inputNew = await service.prepare(input, method, trx);
+    var inputNew = await service.prepare(input, trx);
     const inputProcess = inputNew == null ? input : inputNew;
-    return await service.process(inputProcess, input, method, trx);
+    return await service.process(inputProcess, input, trx);
   } catch (err) {
     throw err;
   }
@@ -162,11 +161,10 @@ const ApiExec = async (
   input: any,
   req: ReqExtended,
   res: Response,
-  method: Tmethod
 ) => {
   if (service.transaction === true && knexExist) { //TODO: suport mongo transaction
     await knex.transaction(async (trx: any) => {
-      const result = await ApiCall(service, input, method, trx);
+      const result = await ApiCall(service, input, trx);
       return ApiResponse.success(
         req,
         res,
@@ -175,7 +173,7 @@ const ApiExec = async (
       );
     });
   } else {
-    const result = await ApiCall(service, input, method);
+    const result = await ApiCall(service, input);
     return ApiResponse.success(
       req,
       res,
@@ -187,21 +185,21 @@ const ApiExec = async (
 
 const ApiService = (service: IService) => ({
   /** run service */
-  run: async (req: ReqExtended, res: Response, method: Tmethod = "get") => {
-    let inputData = method == "get" ? req.query : req.body;
+  run: async (req: ReqExtended, res: Response) => {
+    let inputData = { ...req.query, ...req.body, ...req.params }
     if (req.input) {
       inputData = { ...inputData, ...req.input }
     }
-    await ApiExec(service, inputData, req, res, method);
+    await ApiExec(service, inputData, req, res);
   },
 });
 
 const serviceExec = async (
   req: ReqExtended,
   res: Response,
-  method: Tmethod,
   service: IService
 ) => {
+  let method = req.method.toLowerCase() as Tmethod
   if (service.method) {
     if (!service.method.includes(method)) {
       throw new ApiException("Method not allowed", {}, 405, {
@@ -210,12 +208,7 @@ const serviceExec = async (
       });
     }
   }
-  if (method != "get") {
-    req.body = { ...req.body, ...req.params };
-  } else {
-    req.query = { ...req.query, ...req.params };
-  }
-  await ApiService(service).run(req, res, method);
+  await ApiService(service).run(req, res);
 };
 
 export {

@@ -11,6 +11,4 @@ router.get('/heloo', (req, res) => {
     res.json('hello world')
 })
 
-app.use('/log', express.static(__dirname + '/../test/log'))
-
 start();

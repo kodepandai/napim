@@ -1,12 +1,11 @@
-import { ApiException, db, IService } from '../../../dist/index'
+import { ApiException, IService } from '../../../dist/index'
 /**
  * Service Test
  */
 
 const service: IService = {
     method: ['post'],
-    transaction: true,
-    auth: false,
+    transaction: false,
     prepare: async function (input) {
         return input;
     },

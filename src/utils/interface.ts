@@ -8,6 +8,7 @@ export interface IRoutes {
   get?: object[];
   delete?: object[];
   put?: object[];
+  patch?: object[];
   middleware: string[];
 }
 export interface IRoute {
@@ -17,12 +18,11 @@ export interface IRoute {
 export interface IService {
   method?: Tmethod[];
   transaction: boolean;
-  auth?: boolean;
-  prepare: (input: any | any[], method: Tmethod, trx: any) => any;
+  middleware?: IMiddleware[],
+  prepare: (input: any | any[], trx: any) => any;
   process: (
     input: any,
     originalInput: any,
-    method: Tmethod,
     trx: any
   ) => any;
   rules: object;
