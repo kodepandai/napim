@@ -23,7 +23,10 @@ export interface IService {
   process: (
     input: any,
     originalInput: any,
-    trx: any
+    trx: any,
+    req?: Request,
+    res?: Response
+
   ) => any;
   rules: object;
   customMessages?: object | undefined;

@@ -84,7 +84,9 @@ class ApiException {
 const ApiCall = async (
   service: IService,
   input: any,
-  trx: any = knex
+  trx: any = knex,
+  req: Request,
+  res: Response
 ) => {
   try {
     const validator = new Validator(
@@ -102,7 +104,7 @@ const ApiCall = async (
     }
     var inputNew = await service.prepare(input, trx);
     const inputProcess = inputNew == null ? input : inputNew;
-    return await service.process(inputProcess, input, trx);
+    return await service.process(inputProcess, input, trx, req, res);
   } catch (err) {
     throw err;
   }
@@ -164,7 +166,7 @@ const ApiExec = async (
 ) => {
   if (service.transaction === true && knexExist) { //TODO: suport mongo transaction
     await knex.transaction(async (trx: any) => {
-      const result = await ApiCall(service, input, trx);
+      const result = await ApiCall(service, input, trx, req, res);
       return ApiResponse.success(
         req,
         res,
@@ -173,7 +175,7 @@ const ApiExec = async (
       );
     });
   } else {
-    const result = await ApiCall(service, input);
+    const result = await ApiCall(service, input, knex, req, res);
     return ApiResponse.success(
       req,
       res,
