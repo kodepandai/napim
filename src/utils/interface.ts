@@ -24,8 +24,8 @@ export interface IService {
     input: any,
     originalInput: any,
     trx: any,
-    req?: Request,
-    res?: Response
+    req: Request,
+    res: Response
 
   ) => any;
   rules: object;
