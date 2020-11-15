@@ -29,20 +29,11 @@ export const injectModule = (modules: any[]) => {
 let router: Router = Router();
 const routeExec = (routes: IKeyVal, method: Tmethod, middleware: string[]) => {
   routes[method].forEach((r: IRoute) => {
-    let mds: any[] = [];
+    let mds = [];
+    let routeMiddleware = [];
     for (let i = 0; i < middleware.length; i++) {
       try {
-        let mInstance = require(middlewarePath + "/" + middleware[i]);
-
-        mInstance = (mInstance.default || mInstance) as IMiddleware;
-        mds[i] = async (req: ReqExtended, res: Response, next: NextFunction) => {
-          if (!req.input) req.input = {}
-          try {
-            await mInstance(req, res, next);
-          } catch (err) {
-            handleError(req, res, err);
-          }
-        };
+        routeMiddleware.push(require(middlewarePath + "/" + middleware[i]))
       } catch (error) {
         let message =
           "middleware " + middleware[i] + " not found, check your router.json";
@@ -63,10 +54,21 @@ const routeExec = (routes: IKeyVal, method: Tmethod, middleware: string[]) => {
         detail: "service " + r.service + " not found",
       });
     }
-    let localMidd = service.middleware || []
+    let localMiddleware = service.middleware || []
+    let mergeMiddleware = [...routeMiddleware, ...localMiddleware]
+    for (let i = 0; i < mergeMiddleware.length; i++) {
+      let mInstance = mergeMiddleware[i].default || mergeMiddleware[i];
+      mds[i] = async (req: ReqExtended, res: Response, next: NextFunction) => {
+        try {
+          if (!req.input) req.input = {}
+          await mInstance(req, res, next);
+        } catch (err) {
+          handleError(req, res, err);
+        }
+      };
+    }
     router[method](routes.prefix + r.path, [
       ...mds,
-      ...localMidd,
       async (req: ReqExtended, res: Response) => {
         try {
           await serviceExec(req, res, service);
