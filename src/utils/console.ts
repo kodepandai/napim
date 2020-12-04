@@ -1,7 +1,7 @@
 import { Yellow, Green, Red, Blue } from './color'
 import { TColor, TConsoleMessage } from './types'
 const print = function (color: TColor, message?: TConsoleMessage) {
-    if (!message) return console.log(message)
+    if (typeof message == 'object' && message.constructor != Array) return console.log(message)
     message = <string[]>message
     console.log(color, '[napim] ' + (message.constructor == Array ? message.join('\n') : message))
 }

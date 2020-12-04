@@ -1,5 +1,4 @@
-import { start, Log, injectModule, app, express } from "../dist/index";
-import { router } from "../dist/router";
+import { start, injectModule, router } from "../dist/index";
 
 const moduleA = 'module A'
 const moduleB = 'module B'
@@ -10,5 +9,4 @@ injectModule([
 router.get('/heloo', (req, res) => {
     res.json('hello world')
 })
-
 start();
