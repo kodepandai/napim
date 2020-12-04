@@ -10,15 +10,20 @@ const app: Application = express();
 /**
  * Start Node API Maker
  */
-const start = (): void => {
+const start = (): Application | void => {
   try {
     Console.info('Starting framework...')
     app.use(express.json());
     app.use("", createRouter());
-    const server: http.Server = http.createServer(app);
-    server.listen(port);
-    server.on("error", onError);
-    server.on("listening", () => onListening(server));
+    if (process.env.MODE == "serverless") {
+      return app;
+    } else {
+      const server: http.Server = http.createServer(app);
+      server.listen(port);
+      server.on("error", onError);
+      server.on("listening", () => onListening(server));
+    }
+
   } catch (error) {
     Log.fatal(error);
     process.exit(1);
