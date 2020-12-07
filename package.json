@@ -1,6 +1,6 @@
 {
   "name": "napim",
-  "version": "2.1.0-beta1",
+  "version": "2.1.0-beta2",
   "description": "Node Api Maker build with express and knex",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

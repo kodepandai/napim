@@ -112,7 +112,6 @@ const createRouter = () => {
       type: "ROUTE_NOT_FOUND",
       detail: "no service can handle this route, check router for detail",
     });
-    Log.error(parseError(req, err));
     ApiResponse.error(req, res, err);
   });
   return router
