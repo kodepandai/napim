@@ -107,6 +107,10 @@ const ApiCall = async (
     return await service.process(inputProcess, input, trx, req, res);
   } catch (err) {
     throw err;
+  } finally {
+    if (process.env.MODE == 'serverless' && process.env.OFFLINE == 'true' && knexExist) {
+      trx.destroy();
+    }
   }
 };
 /**
