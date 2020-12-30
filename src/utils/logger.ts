@@ -1,6 +1,5 @@
 import { logPath } from "./path";
 import fs from 'fs'
-import { Console } from "../core/ServiceProvider";
 
 const opts = {
   logDirectory: logPath, // NOTE: folder must exist and be writable...
@@ -35,7 +34,7 @@ let log: Logger = {
     console.info(data)
   }
 }
-if (fs.existsSync(logPath) && process.env.MODE != "serverless") {
+if (fs.existsSync(logPath) && process.env.SERVERLESS != "true") {
   log = require("simple-node-logger").createRollingFileLogger(opts);
 }
 export default log;

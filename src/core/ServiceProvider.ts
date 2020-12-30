@@ -1,11 +1,12 @@
 import path from "path";
 import Log from "../utils/logger";
 import { Validator } from "node-input-validator";
-import { Response, Request } from "express";
 import { IService, IErrorData, ReqExtended } from "../utils/interface";
 import { Tmethod } from "../utils/types";
 import * as Console from "../utils/console";
-import { parseError } from "../utils/helper";
+import { parseError, send } from "../utils/helper";
+import { ServerResponse as Response } from "http";
+
 let DB: any
 let knex: any
 let mongo: any
@@ -85,7 +86,7 @@ const ApiCall = async (
   service: IService,
   input: any,
   trx: any = knex,
-  req: Request,
+  req: ReqExtended,
   res: Response
 ) => {
   try {
@@ -108,7 +109,7 @@ const ApiCall = async (
   } catch (err) {
     throw err;
   } finally {
-    if (process.env.MODE == 'serverless' && process.env.OFFLINE == 'true' && knexExist) {
+    if (process.env.IS_OFFLINE == 'true' && knexExist) {
       trx.destroy();
     }
   }
@@ -120,7 +121,7 @@ var ApiResponse = {
   /**
    * response json success
    */
-  success: (req: Request, res: Response, data: object, code: number = 200) => {
+  success: (req: ReqExtended, res: Response, data: object, code: number = 200) => {
     if (code >= 300) {
       let err = new ApiException("invalid http response code", {}, 500, {
         type: "INVALID_HTTP_CODE",
@@ -129,14 +130,14 @@ var ApiResponse = {
           code,
       });
       Log.error(parseError(req, err));
-      return res.status(500).json(parseError(req, err));
+      return send(res, 500, parseError(req, err));
     }
-    return res.status(code).json(data);
+    return send(res, code, data);
   },
   /**
    * response json error
    */
-  error: (req: Request, res: Response, err: ApiException) => {
+  error: (req: ReqExtended, res: Response, err: ApiException) => {
     if (err.errorCode < 300) {
       let newErr = new ApiException("invalid http response code", {}, 500, {
         type: "INVALID_HTTP_CODE",
@@ -144,8 +145,7 @@ var ApiResponse = {
           "you must return valid http code for error response, returned code is: " +
           err.errorCode,
       });
-      Log.error(parseError(req, newErr));
-      return res.status(500).json(parseError(req, err));
+      return send(res, 500, parseError(req, err));
     }
     var result = parseError(req, err);
     if (err.errorCode >= 500) {
@@ -155,8 +155,7 @@ var ApiResponse = {
         result.detail = "something wrong";
       }
     }
-
-    return res.status(err.errorCode).json(result);
+    return send(res, err.errorCode, result);
   },
 };
 /**
@@ -205,7 +204,7 @@ const serviceExec = async (
   res: Response,
   service: IService
 ) => {
-  let method = req.method.toLowerCase() as Tmethod
+  let method = req.method?.toLowerCase() as Tmethod
   if (service.method) {
     if (!service.method.includes(method)) {
       throw new ApiException("Method not allowed", {}, 405, {

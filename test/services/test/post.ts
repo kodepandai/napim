@@ -1,4 +1,4 @@
-import { ApiException, IService } from '../../../dist/index'
+import { IService } from '../../../dist/index'
 /**
  * Service Test
  */

@@ -1,5 +1,5 @@
 # NAPIM
-Node API Maker built with express and nodejs
+Node API Maker built with polka and nodejs
 
 # Overview
 The idea is to make API development quick and easy. Every single end point is handled by one file that called service. One service include:
@@ -158,15 +158,7 @@ This is default folder structur for typescript mode:
     ```
     # Express App Instance
     
-    If you want to access express instance, just `import {app} from "napim"`, example
-    
-    ```
-    //index.ts
-    import { start, app, express } from 'napim'
-    app.use('/public', express.static(__dirname + '/public'))
-    start()
-    ```
-    
+    If you want to access polka instance, just `import {app} from "napim"`
  
     
     

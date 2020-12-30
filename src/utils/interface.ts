@@ -1,14 +1,17 @@
-import { Request, Response, NextFunction, request } from "express";
+import { Request, Next as NextFunction } from 'polka'
 import { Tmethod } from "./types";
+import { ServerResponse as Response } from 'http';
 export interface IKeyVal {
   [key: string]: any;
 }
 export interface IRoutes {
-  post?: object[];
-  get?: object[];
-  delete?: object[];
-  put?: object[];
-  patch?: object[];
+  tag?: string,
+  prefix: string,
+  post?: IRoute[];
+  get?: IRoute[];
+  delete?: IRoute[];
+  put?: IRoute[];
+  patch?: IRoute[];
   middleware: string[];
 }
 export interface IRoute {
@@ -36,10 +39,12 @@ export interface IErrorData {
   detail: string;
 }
 export interface ReqExtended extends Request {
+  body?: any
   input?: any
 }
 export interface IMiddleware {
-  (req: ReqExtended, res: Response, next: NextFunction): void;
+  (req: ReqExtended, res: Response, next: NextFunction): Promise<void>
+  default?: (req: ReqExtended, res: Response, next: NextFunction) => Promise<void>
 }
 export interface IGmInstance {
   name: string;

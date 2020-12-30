@@ -9,6 +9,10 @@
       {
         "path": "/test/get",
         "service": "/test/get"
+      },
+      {
+        "path": "/test/get/:id",
+        "service": "/test/get"
       }
     ],
     "post": [

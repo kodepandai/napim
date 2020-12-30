@@ -1,4 +1,4 @@
-import { ApiException, IService } from "../../../dist/index";
+import { IService } from "../../../dist/index";
 import Session from "../../middleware/Session";
 import Upload from "../../middleware/Upload";
 /**
@@ -12,7 +12,7 @@ const service: IService = {
   prepare: async function (input) {
     return input;
   },
-  process: async function (input, OriginalInput, trx) {
+  process: async function (input, OriginalInput, trx, req, res) {
     return input
   },
   rules: {},

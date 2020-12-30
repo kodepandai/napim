@@ -1,6 +1,6 @@
 import { IMiddleware } from "../../dist";
 
-const Upload: IMiddleware = (req, res, next) => {
+const Upload: IMiddleware = async (req, res, next) => {
   console.log("mid upload");
   next();
 };

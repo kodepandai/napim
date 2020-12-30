@@ -3,3 +3,5 @@ node_modules/
 log/
 dist/
 dist_test/
+knexfile.js
+yarn-error.log
