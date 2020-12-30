@@ -90,6 +90,7 @@ const ApiCall = async (
   res: Response
 ) => {
   try {
+    delete input.wild
     const validator = new Validator(
       input,
       service.rules,

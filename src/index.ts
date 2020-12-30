@@ -16,8 +16,8 @@ const start = () => {
     Console.info('Starting framework...')
     app.use(json())
     app.use("", router);
+    if (process.env.SERVERLESS == 'true') return app.handler
     app.listen(port, (err: Error) => onListening(port, err));
-    return app.handler
   } catch (error) {
     Log.fatal(error);
     process.exit(1);
