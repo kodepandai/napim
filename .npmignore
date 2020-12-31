@@ -1,5 +1,6 @@
 node_modules/
 .env
+.env.example
 log/
 src/
 dist_test/
@@ -8,3 +9,6 @@ test/
 knexfile.js
 tsconfig.json
 migrations/
+CHANGELOG.md
+README.md
+yarn.lock

@@ -1,5 +1,4 @@
 import { IService } from "../../../dist/index";
-import Session from "../../middleware/Session";
 import Upload from "../../middleware/Upload";
 /**
  * Service Test
@@ -8,7 +7,7 @@ import Upload from "../../middleware/Upload";
 const service: IService = {
   method: ["post", "get"],
   transaction: false,
-  middleware: [Upload, Session],
+  middleware: [Upload],
   prepare: async function (input) {
     return input;
   },

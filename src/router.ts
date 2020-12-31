@@ -35,9 +35,9 @@ const runServices = (routes: IRoutes, method: Tmethod) => {
       });
     }
 
-    let localMiddleware = []
-    for (let i = 0; i < (service.middleware || []).length; i++) {
-      let mInstance = (service.middleware || [])[i].default || (service.middleware || [])[i];
+    let localMiddleware: IMiddleware[] = [];
+    (service.middleware || []).forEach((m, i) => {
+      let mInstance = m.default || m;
       localMiddleware[i] = async (req: any, res: Response, next: NextFunction) => {
         try {
           if (!req.input) req.input = {}
@@ -46,10 +46,10 @@ const runServices = (routes: IRoutes, method: Tmethod) => {
           handleError(req, res, err);
         }
       };
-    }
+    })
     router[method](
       routes.prefix + r.path,
-      ...localMiddleware,
+      ...localMiddleware as [],
       async (req: any, res: Response) => {
         try {
           await serviceExec(req, res, service);
@@ -62,11 +62,11 @@ const runServices = (routes: IRoutes, method: Tmethod) => {
 }
 
 routers.forEach((routes: IRoutes) => {
-  let routeMiddleware = [];
-  for (let i = 0; i < routes.middleware.length; i++) {
+  let routeMiddleware: IMiddleware[] = [];
+  routes.middleware.forEach((m, i) => {
     let mInstance: IMiddleware
     try {
-      const midd = require(middlewarePath + "/" + routes.middleware[i])
+      const midd = require(middlewarePath + "/" + m)
       mInstance = midd.default || midd
     } catch (error) {
       let message =
@@ -85,8 +85,8 @@ routers.forEach((routes: IRoutes) => {
         handleError(req, res, err);
       }
     }
-  }
-  router.use(routes.prefix, ...routeMiddleware)
+  })
+  router.use(routes.prefix, ...routeMiddleware as any[])
   if (routes.post) runServices(routes, 'post')
   if (routes.get) runServices(routes, 'get')
   if (routes.patch) runServices(routes, 'patch')
