@@ -151,7 +151,7 @@ const ApiExec = async (
 ) => {
   if (service.transaction === true && db?.transaction) { //TODO: suport mongo transaction
     await db.transaction(async (trx: any) => {
-      const result = await ApiCall(service, input, { ...db, ...trx }, req, res);
+      const result = await ApiCall(service, input, trx, req, res);
       return ApiResponse.success(
         req,
         res,
