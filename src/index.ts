@@ -12,10 +12,10 @@ const app = polka();
 /**
  * Start Node API Maker
  */
-const start = (config: { db: any } = { db: null }) => {
+const start = (config: { db?: any, beforeStart?: any } = { db: null, beforeStart: () => { } }) => {
   try {
     Console.info('Starting framework...')
-    registerDb(config.db)
+    registerDb(config.db, config.beforeStart)
     app.use(json())
     app.use("", router);
     if (process.env.SERVERLESS == 'true') return app.handler

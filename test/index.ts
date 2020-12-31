@@ -1,6 +1,8 @@
-import { start, router } from "../dist/index";
+import { start } from "../dist/index";
+import { extendQuery } from "./util/CustomQuery";
 
-router.get('/heloo', (req, res) => {
-    res.json('hello world')
-})
-start();
+start({
+    beforeStart: () => {
+        extendQuery()
+    }
+});
