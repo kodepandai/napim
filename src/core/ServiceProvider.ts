@@ -7,54 +7,31 @@ import * as Console from "../utils/console";
 import { parseError, send } from "../utils/helper";
 import { ServerResponse as Response } from "http";
 
-let DB: any
-let knex: any
-let mongo: any
-let knexExist: boolean
-let mongoExist: boolean
-try {
-  //Check is using knex or not
-  DB = require('knex')
-  knexExist = true
-} catch (error) {
-  knexExist = false
-  knex = null
-}
-if (knexExist) {
-  let knexFile: any;
-  try {
-    knexFile = require(path.resolve(process.cwd(), "knexfile.js"));
-  } catch (error) {
-    Console.error("missing knexfile.js, run npx knex init to create it!");
-    process.exit(1);
+let db: any
+
+export const registerDb = (injectedDB = null) => {
+  db = injectedDB
+  if (!db) {
+    try {
+      //Check is using knex or not
+      let DB = require('db')
+      let knexFile: any;
+      try {
+        knexFile = require(path.resolve(process.cwd(), "knexfile.js"));
+      } catch (error) {
+        Console.error("missing knexfile.js, run npx knex init to create it!");
+        process.exit(1);
+      }
+      if (!Object.keys(knexFile).includes(process.env.DB_ENV || "development")) {
+        Console.error(
+          "invalid DB_ENV, available environment: " + Object.keys(knexFile)
+        );
+        process.exit(1);
+      }
+      db = DB(knexFile[process.env.DB_ENV || "development"]);
+    } catch (e) { }
   }
-  if (!Object.keys(knexFile).includes(process.env.DB_ENV || "development")) {
-    Console.error(
-      "invalid DB_ENV, available environment: " + Object.keys(knexFile)
-    );
-    process.exit(1);
-  }
-  knex = DB(knexFile[process.env.DB_ENV || "development"]);
 }
-try {
-  // Check is using mongoose or not
-  mongo = require('mongoose')
-  mongoExist = true
-} catch (error) {
-  mongoExist = false
-  mongo = null
-}
-mongoExist && mongo.connect(<string>process.env.MONGO_URL, {
-  useUnifiedTopology: true,
-  useNewUrlParser: true,
-  user: process.env.MONGO_USER,
-  pass: process.env.MONGO_PASSWORD
-}).then(() => {
-  Console.success('successfully connected to the mongo database');
-}).catch((err: Error) => {
-  Console.error(err.message);
-  process.exit();
-});
 
 /**
 * create Exception Instance that will be thrown to client response
@@ -85,7 +62,7 @@ class ApiException {
 const ApiCall = async (
   service: IService,
   input: any,
-  trx: any = knex,
+  trx: any = db,
   req: ReqExtended,
   res: Response
 ) => {
@@ -110,7 +87,7 @@ const ApiCall = async (
   } catch (err) {
     throw err;
   } finally {
-    if (process.env.IS_OFFLINE == 'true' && knexExist) {
+    if (process.env.IS_OFFLINE == 'true' && db?.destroy) {
       trx.destroy();
     }
   }
@@ -168,8 +145,8 @@ const ApiExec = async (
   req: ReqExtended,
   res: Response,
 ) => {
-  if (service.transaction === true && knexExist) { //TODO: suport mongo transaction
-    await knex.transaction(async (trx: any) => {
+  if (service.transaction === true && db?.transaction) { //TODO: suport mongo transaction
+    await db.transaction(async (trx: any) => {
       const result = await ApiCall(service, input, trx, req, res);
       return ApiResponse.success(
         req,
@@ -179,7 +156,7 @@ const ApiExec = async (
       );
     });
   } else {
-    const result = await ApiCall(service, input, knex, req, res);
+    const result = await ApiCall(service, input, db, req, res);
     return ApiResponse.success(
       req,
       res,
@@ -222,8 +199,7 @@ export {
   ApiException,
   ApiResponse,
   ApiService,
-  knex,
-  mongo,
+  db,
   serviceExec,
   Console,
   Log,

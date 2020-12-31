@@ -4,6 +4,7 @@ import polka from 'polka'
 import { router } from "./router";
 import * as Console from "./utils/console";
 import { json } from 'body-parser'
+import { registerDb } from "./core/ServiceProvider";
 
 const port: string | number = process.env.PORT || 3000;
 
@@ -11,9 +12,10 @@ const app = polka();
 /**
  * Start Node API Maker
  */
-const start = () => {
+const start = (config: { db: any } = { db: null }) => {
   try {
     Console.info('Starting framework...')
+    registerDb(config.db)
     app.use(json())
     app.use("", router);
     if (process.env.SERVERLESS == 'true') return app.handler
@@ -23,8 +25,6 @@ const start = () => {
     process.exit(1);
   }
 };
-
-
 
 /**
  * Event listener for HTTP server "listening" event.
