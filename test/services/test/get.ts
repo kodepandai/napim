@@ -1,4 +1,4 @@
-import { IService } from "../../../dist/index";
+import { IService, db } from "../../../dist/index";
 import Upload from "../../middleware/Upload";
 import { DB } from "../../util/CustomQuery";
 /**
@@ -13,8 +13,7 @@ const service: IService = {
     return input;
   },
   process: async function (input, OriginalInput, trx: DB, req, res) {
-    return await trx.row('select * from users')
-    return input
+    return await db.row('select * from users')
   },
   rules: {},
 };

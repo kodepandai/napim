@@ -11,7 +11,7 @@
         "service": "/test/get"
       },
       {
-        "path": "/test/get/:id",
+        "path": "/test/get/:id/xxx/:xid",
         "service": "/test/get"
       }
     ],

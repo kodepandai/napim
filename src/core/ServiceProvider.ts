@@ -8,7 +8,6 @@ import { parseError, send } from "../utils/helper";
 import { ServerResponse as Response } from "http";
 
 let db: any
-
 export const registerDb = (injectedDB = null, beforeStart = () => { }) => {
   db = injectedDB
   if (!db) {
@@ -71,7 +70,6 @@ const ApiCall = async (
   res: Response
 ) => {
   try {
-    delete input.wild
     const validator = new Validator(
       input,
       service.rules,
@@ -127,7 +125,7 @@ var ApiResponse = {
           "you must return valid http code for error response, returned code is: " +
           err.errorCode,
       });
-      return send(res, 500, parseError(req, err));
+      return send(res, 500, parseError(req, newErr));
     }
     var result = parseError(req, err);
     if (err.errorCode >= 500) {

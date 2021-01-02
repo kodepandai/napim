@@ -22,7 +22,7 @@ let router = polka()
 
 const routers = require(routePath);
 
-const runServices = (routes: IRoutes, method: Tmethod) => {
+const runServices = (routes: IRoutes, method: Tmethod, routeMiddleware: IMiddleware[]) => {
   routes[method]?.forEach((r: IRoute) => {
     let service: IService;
     try {
@@ -49,6 +49,12 @@ const runServices = (routes: IRoutes, method: Tmethod) => {
     })
     router[method](
       routes.prefix + r.path,
+      async (req, res: Response, next: NextFunction) => {
+        req.path = routes.prefix + r.path
+        delete req.params.wild
+        next()
+      },
+      ...routeMiddleware as [],
       ...localMiddleware as [],
       async (req: any, res: Response) => {
         try {
@@ -86,12 +92,11 @@ routers.forEach((routes: IRoutes) => {
       }
     }
   })
-  router.use(routes.prefix, ...routeMiddleware as any[])
-  if (routes.post) runServices(routes, 'post')
-  if (routes.get) runServices(routes, 'get')
-  if (routes.patch) runServices(routes, 'patch')
-  if (routes.put) runServices(routes, 'put')
-  if (routes.delete) runServices(routes, 'delete')
+  if (routes.post) runServices(routes, 'post', routeMiddleware)
+  if (routes.get) runServices(routes, 'get', routeMiddleware)
+  if (routes.patch) runServices(routes, 'patch', routeMiddleware)
+  if (routes.put) runServices(routes, 'put', routeMiddleware)
+  if (routes.delete) runServices(routes, 'delete', routeMiddleware)
 })
 
 router.get("/", function (req, res) {
