@@ -80,9 +80,9 @@ const ApiCall = async (
 
     const valid = await validator.check();
     if (!valid) {
-      throw new ApiException("", 422, {
-        type: "INVALID_REQUEST",
-        detail: "Unprocessable Entity",
+      throw new ApiException("Unprocessable Entity", 422, {
+        type: 'UNPROCESSABLE_ENTITY',
+        detail: 'your input is not valid'
       }, validator.errors);
     }
     var inputNew = await service.prepare(input, trx);
