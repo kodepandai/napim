@@ -29,7 +29,7 @@ const runServices = (routes: IRoutes, method: Tmethod, routeMiddleware: IMiddlew
       const instance = require(servicePath + r.service);
       service = instance.default || instance;
     } catch (err) {
-      throw new ApiException("Service Not Found", {}, 404, {
+      throw new ApiException("Service Not Found", 404, {
         type: "SERVICE_NOT_FOUND",
         detail: "service " + r.service + " not found",
       });
@@ -104,7 +104,7 @@ router.get("/", function (req, res) {
 });
 
 router.all("*", (req: any, res) => {
-  let err = new ApiException("Invalid route path", {}, 404, {
+  let err = new ApiException("Invalid route path", 404, {
     type: "ROUTE_NOT_FOUND",
     detail: "no service can handle this route, check router for detail",
   });

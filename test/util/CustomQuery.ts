@@ -1,5 +1,5 @@
 import Knex from "knex";
-import { db } from '../../dist/index'
+import { db, trx } from '../../dist/index'
 
 export interface DB extends Knex {
     run: (sql: string, params?: []) => Promise<any>
@@ -7,7 +7,7 @@ export interface DB extends Knex {
 }
 export const extendQuery = () => {
     db.run = async (sql: any, params = []) => {
-        return db.raw(sql, params)
+        return (trx.isTransaction ? db.raw(sql, params).transacting(trx) : db.raw(sql, params))
             .then((res: { rows: any }) => {
                 return res.rows;
             }).catch((err: any) => {
@@ -15,7 +15,7 @@ export const extendQuery = () => {
             });
     }
     db.row = async (sql: any, params = []) => {
-        return db.raw(sql, params)
+        return (trx.isTransaction ? db.raw(sql, params).transacting(trx) : db.raw(sql, params))
             .then((res: { rows: any }) => {
                 return res.rows[0];
             }).catch((err: any) => {

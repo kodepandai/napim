@@ -8,6 +8,7 @@ import { parseError, send } from "../utils/helper";
 import { ServerResponse as Response } from "http";
 
 let db: any
+let trx: any
 export const registerDb = (injectedDB = null, beforeStart = () => { }) => {
   db = injectedDB
   if (!db) {
@@ -34,6 +35,7 @@ export const registerDb = (injectedDB = null, beforeStart = () => { }) => {
   }
   beforeStart()
   db = db
+  trx = db
 }
 
 /**
@@ -46,12 +48,12 @@ class ApiException {
   errorData: IErrorData;
   constructor(
     errorMessage = "",
-    errorList = {},
     errorCode = 500,
     errorData = {
       type: "SERVER_ERROR",
       detail: "something wrong, check server log for more detail",
-    }
+    },
+    errorList = {},
   ) {
     this.errorMessage = errorMessage;
     this.errorList = errorList;
@@ -78,10 +80,10 @@ const ApiCall = async (
 
     const valid = await validator.check();
     if (!valid) {
-      throw new ApiException("", validator.errors, 422, {
+      throw new ApiException("", 422, {
         type: "INVALID_REQUEST",
         detail: "Unprocessable Entity",
-      });
+      }, validator.errors);
     }
     var inputNew = await service.prepare(input, trx);
     const inputProcess = inputNew == null ? input : inputNew;
@@ -103,7 +105,7 @@ var ApiResponse = {
    */
   success: (req: ReqExtended, res: Response, data: object, code: number = 200) => {
     if (code >= 300) {
-      let err = new ApiException("invalid http response code", {}, 500, {
+      let err = new ApiException("invalid http response code", 500, {
         type: "INVALID_HTTP_CODE",
         detail:
           "you must return valid http code for success response, returned code is: " +
@@ -119,7 +121,7 @@ var ApiResponse = {
    */
   error: (req: ReqExtended, res: Response, err: ApiException) => {
     if (err.errorCode < 300) {
-      let newErr = new ApiException("invalid http response code", {}, 500, {
+      let newErr = new ApiException("invalid http response code", 500, {
         type: "INVALID_HTTP_CODE",
         detail:
           "you must return valid http code for error response, returned code is: " +
@@ -148,8 +150,9 @@ const ApiExec = async (
   res: Response,
 ) => {
   if (service.transaction === true && db?.transaction) { //TODO: suport mongo transaction
-    await db.transaction(async (trx: any) => {
-      const result = await ApiCall(service, input, trx, req, res);
+    await db.transaction(async (_trx: any) => {
+      trx = _trx
+      const result = await ApiCall(service, input, _trx, req, res);
       return ApiResponse.success(
         req,
         res,
@@ -187,7 +190,7 @@ const serviceExec = async (
   let method = req.method?.toLowerCase() as Tmethod
   if (service.method) {
     if (!service.method.includes(method)) {
-      throw new ApiException("Method not allowed", {}, 405, {
+      throw new ApiException("Method not allowed", 405, {
         detail: "allowed method:  " + service.method.join(", "),
         type: "METHOD_NOT_ALLOWED",
       });
@@ -202,6 +205,7 @@ export {
   ApiResponse,
   ApiService,
   db,
+  trx,
   serviceExec,
   Console,
   Log,

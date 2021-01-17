@@ -4,8 +4,8 @@ exports.up = function (knex) {
         table.string('username');
         table.string('email').unique();
         table.string('password');
-        table.timestamp('created_at').defaultTo(knex.fn.now())
-        table.timestamp('updated_at').defaultTo(knex.fn.now())
+        table.timestamp('created_at').defaultTo(knex.fn.now()).nullable()
+        table.timestamp('updated_at').defaultTo(knex.fn.now()).nullable()
         table.timestamp('deleted_at')
     });
 };
