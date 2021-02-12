@@ -1,6 +1,6 @@
 import path from "path";
 import Log from "../utils/logger";
-import { Validator } from "node-input-validator";
+const { Validator } = require("node-input-validator")
 import { IService, IErrorData, ReqExtended } from "../utils/interface";
 import { Tmethod } from "../utils/types";
 import * as Console from "../utils/console";
@@ -78,7 +78,7 @@ const ApiCall = async (
       service.customMessages || undefined
     );
 
-    const valid = await validator.check();
+    const valid = await validator.validate();
     if (!valid) {
       throw new ApiException("Unprocessable Entity", 422, {
         type: 'UNPROCESSABLE_ENTITY',

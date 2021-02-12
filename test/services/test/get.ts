@@ -20,6 +20,8 @@ const service: IService = {
     }
     return await db.row('select * from users')
   },
-  rules: {},
+  rules: {
+    'id': 'even'
+  },
 }
 export default service;
