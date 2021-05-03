@@ -1,6 +1,6 @@
 require("dotenv").config();
 import Log from "./utils/logger";
-import polka from 'polka'
+import polka, { Polka } from 'polka'
 import { router } from "./router";
 import * as Console from "./utils/console";
 import { json } from 'body-parser'
@@ -12,14 +12,14 @@ const app = polka();
 /**
  * Start Node API Maker
  */
-const start = (config: { db?: any, beforeStart?: any, listen?:boolean} = { db: null, beforeStart: () => { }, listen:true}) => {
+const start = (config: { db?: any, beforeStart?: any, listen?:boolean} = { db: null, beforeStart: () => { }, listen:true}):Polka['handler']|Polka => {
   try {
     Console.info('Starting framework...')
     registerDb(config.db, config.beforeStart)
     app.use(json())
     app.use("", router);
     if (!config.listen) return app.handler
-    app.listen(port, (err: Error) => onListening(port, err));
+    return app.listen(port, (err: Error) => onListening(port, err));
   } catch (error) {
     Log.fatal(error);
     process.exit(1);
