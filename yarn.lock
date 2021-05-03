@@ -1556,7 +1556,7 @@ node-fetch@^2.6.0:
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.1.tgz#045bd323631f76ed2e2b55573394416b639a0052"
   integrity sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==
 
-node-input-validator@^5.0.0-beta.3:
+node-input-validator@next:
   version "5.0.0-beta.3"
   resolved "https://registry.yarnpkg.com/node-input-validator/-/node-input-validator-5.0.0-beta.3.tgz#5f43d4ad9abf1fc522432d3efe8b339a52481e82"
   integrity sha512-XIhg8w56GbxlNql3c8HrsnYotBkWGTheg5kHT7hq2QmION2ssrYctV/rYKxhSVitqN8OpOZ6R80IhxKKkUu0qQ==
