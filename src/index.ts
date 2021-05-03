@@ -12,13 +12,13 @@ const app = polka();
 /**
  * Start Node API Maker
  */
-const start = (config: { db?: any, beforeStart?: any } = { db: null, beforeStart: () => { } }) => {
+const start = (config: { db?: any, beforeStart?: any, listen?:boolean} = { db: null, beforeStart: () => { }, listen:true}) => {
   try {
     Console.info('Starting framework...')
     registerDb(config.db, config.beforeStart)
     app.use(json())
     app.use("", router);
-    if (process.env.SERVERLESS == 'true') return app.handler
+    if (!config.listen) return app.handler
     app.listen(port, (err: Error) => onListening(port, err));
   } catch (error) {
     Log.fatal(error);

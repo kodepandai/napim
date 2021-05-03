@@ -91,7 +91,7 @@ const ApiCall = async (
   } catch (err) {
     throw err;
   } finally {
-    if (process.env.IS_OFFLINE == 'true' && db?.destroy) {
+    if (process.env.DB_DESTROY == 'true' && db?.destroy) {
       db.destroy();
     }
   }

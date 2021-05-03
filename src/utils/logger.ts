@@ -34,7 +34,7 @@ let log: Logger = {
     console.info(data)
   }
 }
-if (fs.existsSync(logPath) && process.env.SERVERLESS != "true") {
+if (fs.existsSync(logPath) && process.env.LOG != "false") {
   log = require("simple-node-logger").createRollingFileLogger(opts);
 }
 export default log;
