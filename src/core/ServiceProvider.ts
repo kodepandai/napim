@@ -1,9 +1,10 @@
 import path from "path";
-import Log from "../utils/logger";
-const { Validator } = require("node-input-validator")
+import { Log } from "../utils/Log";
+import niv from "node-input-validator/cjs"
+const { Validator } = niv
 import { IService, IErrorData, ReqExtended } from "../utils/interface";
 import { Tmethod } from "../utils/types";
-import * as Console from "../utils/console";
+import Console from "../utils/console";
 import { parseError, send } from "../utils/helper";
 import { ServerResponse as Response } from "http";
 

@@ -1,4 +1,4 @@
-import { IMiddleware } from "../../dist";
+import { IMiddleware } from "../../dist/utils/interface";
 
 const Session: IMiddleware = async (req, res, next) => {
   console.log('mid session');

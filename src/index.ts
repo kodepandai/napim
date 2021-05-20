@@ -1,11 +1,13 @@
-require("dotenv").config();
-import Log from "./utils/logger";
-import polka, { IError, NextHandler, Polka, Request, Response } from 'polka'
-import { router } from "./router";
-import * as Console from "./utils/console";
-import { json } from 'body-parser'
-import { registerDb } from "./core/ServiceProvider";
-
+import dotenv from 'dotenv'
+dotenv.config()
+import polka, { Polka } from 'polka'
+import router from "./router";
+import Console from "./utils/console";
+import Parser from 'body-parser'
+const { json } = Parser
+import * as ServiceProvider from "./core/ServiceProvider";
+import * as Path from './utils/path'
+const { Log, registerDb } = ServiceProvider
 const port: string | number = process.env.PORT || 3000;
 
 const app = polka();
@@ -38,8 +40,6 @@ const start = (config: { db?: any, beforeStart?: any, listen?:boolean} = { db: n
 const onListening = (port: string | number) => {
   Console.success("Listening on " + port);
 };
-
-export { app, start, router };
-export * from "./core/ServiceProvider";
-export * from "./utils/interface";
-export * from './utils/path'
+export type { IMiddleware, IErrorData, IGmInstance, IKeyVal, IRoute, IRoutes, IService, ReqExtended } from "./utils/interface";
+const Napim = { app, start, router, ...ServiceProvider, ...Path }
+export default Napim

@@ -1,10 +1,9 @@
-import { start } from "../dist/index";
-import { extendQuery } from "./util/CustomQuery";
-import { extendRule } from "./util/CustomValidation";
-
-start({
+import Napim from 'napim'
+// import CustomQuery from "./util/CustomQuery";
+// import CustomValidation from "./util/CustomValidation";
+Napim.start({
     beforeStart: () => {
-        extendQuery()
-        extendRule()
+        // CustomQuery()
+        // CustomValidation()
     }
 });

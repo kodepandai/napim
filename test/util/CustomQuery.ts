@@ -1,11 +1,11 @@
 import Knex from "knex";
-import { db, trx } from '../../dist/index'
+import { db, trx } from "napim/dist/core/ServiceProvider";
 
 export interface DB extends Knex {
     run: (sql: string, params?: []) => Promise<any>
     row: (sql: string, params?: []) => Promise<any>
 }
-export const extendQuery = () => {
+const CustomQuery = () => {
     db.run = async (sql: any, params = []) => {
         return (trx.isTransaction ? db.raw(sql, params).transacting(trx) : db.raw(sql, params))
             .then((res: { rows: any }) => {
@@ -23,3 +23,4 @@ export const extendQuery = () => {
             });
     }
 }
+export default CustomQuery

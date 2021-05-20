@@ -1,4 +1,5 @@
-import { IService, db, ApiException } from "../../../dist/index";
+import { IService } from "napim";
+import { ApiException, db } from "napim/dist/core/ServiceProvider";
 import Upload from "../../middleware/Upload";
 /**
  * Service Test

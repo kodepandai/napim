@@ -1,32 +1,35 @@
 import polka, { NextHandler } from 'polka'
 
-import { routePath, servicePath, middlewarePath } from "./utils/path";
+import Path from "./utils/path";
+const { routePath, servicePath, middlewarePath } = Path
 import {
   ApiResponse,
   serviceExec,
   Log,
-  ApiException,
+  ApiException
 } from "./core/ServiceProvider";
-import {
+import type {
   IRoute,
   IRoutes,
   IService,
   IMiddleware,
 } from "./utils/interface";
-import { Tmethod } from "./utils/types";
-import * as Console from "./utils/console";
-import { handleError, send } from "./utils/helper";
+import type { Tmethod } from "./utils/types";
+import Console from "./utils/console";
+import * as Helper from "./utils/helper";
+const { handleError, send } = Helper
 import { ServerResponse as Response } from 'http';
-
+import fs from 'fs'
 let router = polka()
 
-const routers = require(routePath);
+const routers = eval(fs.readFileSync(routePath, { encoding: 'utf-8' }))
 
 const runServices = (routes: IRoutes, method: Tmethod, routeMiddleware: IMiddleware[]) => {
-  routes[method]?.forEach((r: IRoute) => {
+  routes[method]?.forEach(async (r: IRoute) => {
     let service: IService;
     try {
-      const instance = require(servicePath + r.service);
+      const instance = await import(servicePath + r.service);
+
       service = instance.default || instance;
     } catch (err) {
       throw new ApiException("Service Not Found", 404, {
@@ -69,10 +72,10 @@ const runServices = (routes: IRoutes, method: Tmethod, routeMiddleware: IMiddlew
 
 routers.forEach((routes: IRoutes) => {
   let routeMiddleware: IMiddleware[] = [];
-  routes.middleware.forEach((m, i) => {
+  routes.middleware.forEach(async (m, i) => {
     let mInstance: IMiddleware
     try {
-      const midd = require(middlewarePath + "/" + m)
+      const midd = await import(middlewarePath + "/" + m)
       mInstance = midd.default || midd
     } catch (error) {
       let message =
@@ -112,4 +115,4 @@ router.all("*", (req: any, res) => {
   ApiResponse.error(req, res, err);
 })
 
-export { router }
+export default router

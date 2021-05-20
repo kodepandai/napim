@@ -1,6 +1,6 @@
 const niv = require('node-input-validator')
 
-export const extendRule = () => {
+const CustomValidation = () => {
     niv.extend('even', () => {
         console.log('even');
 
@@ -29,3 +29,4 @@ export const extendRule = () => {
         unique: 'The attribute is unique.',
     })
 }
+export default CustomValidation

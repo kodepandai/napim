@@ -1,12 +1,12 @@
-import { logPath } from "./path";
+import Path from "./path";
 import fs from 'fs'
 
 const opts = {
-  logDirectory: logPath, // NOTE: folder must exist and be writable...
+  logDirectory: Path.logPath, // NOTE: folder must exist and be writable...
   fileNamePattern: "<DATE>.log",
   dateFormat: "YYYY.MM.DD",
 };
-declare interface Logger {
+export interface Logger {
   trace: (data: any) => void;
   debug: (data: any) => void;
   error: (data: any) => void;
@@ -34,7 +34,8 @@ let log: Logger = {
     console.info(data)
   }
 }
-if (fs.existsSync(logPath) && process.env.LOG != "false") {
-  log = require("simple-node-logger").createRollingFileLogger(opts);
+if (fs.existsSync(Path.logPath) && process.env.LOG != "false") {
+  log = require("simple-node-Log").createRollingFileLogger(opts);
 }
-export default log;
+
+export const Log = log

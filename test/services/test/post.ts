@@ -1,4 +1,4 @@
-import { IService } from '../../../dist/index'
+import { IService } from 'napim';
 /**
  * Service Test
  */
