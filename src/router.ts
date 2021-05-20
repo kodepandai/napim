@@ -1,4 +1,4 @@
-import polka, { Next as NextFunction } from 'polka'
+import polka, { NextHandler } from 'polka'
 
 import { routePath, servicePath, middlewarePath } from "./utils/path";
 import {
@@ -38,7 +38,7 @@ const runServices = (routes: IRoutes, method: Tmethod, routeMiddleware: IMiddlew
     let localMiddleware: IMiddleware[] = [];
     (service.middleware || []).forEach((m, i) => {
       let mInstance = m.default || m;
-      localMiddleware[i] = async (req: any, res: Response, next: NextFunction) => {
+      localMiddleware[i] = async (req: any, res: Response, next: NextHandler) => {
         try {
           if (!req.input) req.input = {}
           await mInstance(req, res, next);
@@ -49,7 +49,7 @@ const runServices = (routes: IRoutes, method: Tmethod, routeMiddleware: IMiddlew
     })
     router[method](
       routes.prefix + r.path,
-      async (req, res: Response, next: NextFunction) => {
+      async (req, res: Response, next: NextHandler) => {
         req.path = routes.prefix + r.path
         delete req.params.wild
         next()
@@ -83,7 +83,7 @@ routers.forEach((routes: IRoutes) => {
         process.exit(1);
       }, 500);
     }
-    routeMiddleware[i] = async (req: any, res: Response, next: NextFunction) => {
+    routeMiddleware[i] = async (req: any, res: Response, next: NextHandler) => {
       try {
         if (!req.input) req.input = {}
         await mInstance(req, res, next);

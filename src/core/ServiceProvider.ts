@@ -174,7 +174,8 @@ const ApiExec = async (
 const ApiService = (service: IService) => ({
   /** run service */
   run: async (req: ReqExtended, res: Response) => {
-    let inputData = { ...req.query, ...req.body, ...req.params }
+    const query = typeof req.query == 'object' ? req.query : {}
+    let inputData = { ...query, ...req.body, ...req.params }
     if (req.input) {
       inputData = { ...inputData, ...req.input }
     }

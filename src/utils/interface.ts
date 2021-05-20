@@ -1,4 +1,4 @@
-import { Request, Next as NextFunction } from 'polka'
+import { Request, NextHandler } from 'polka'
 import { Tmethod } from "./types";
 import { ServerResponse as Response } from 'http';
 export interface IKeyVal {
@@ -43,8 +43,8 @@ export interface ReqExtended extends Request {
   input?: any
 }
 export interface IMiddleware {
-  (req: ReqExtended, res: Response, next: NextFunction): Promise<void>
-  default?: (req: ReqExtended, res: Response, next: NextFunction) => Promise<void>
+  (req: ReqExtended, res: Response, next: NextHandler): Promise<void>
+  default?: (req: ReqExtended, res: Response, next: NextHandler) => Promise<void>
 }
 export interface IGmInstance {
   name: string;
