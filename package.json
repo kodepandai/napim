@@ -1,6 +1,6 @@
 {
   "name": "napim",
-  "version": "4.0.0-beta",
+  "version": "4.0.0-beta1",
   "description": "Node Api Maker build with polka",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
