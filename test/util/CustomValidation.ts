@@ -1,5 +1,4 @@
-const niv = require('node-input-validator')
-
+import niv from 'node-input-validator/cjs'
 const CustomValidation = () => {
     niv.extend('even', () => {
         console.log('even');

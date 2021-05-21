@@ -1,6 +1,5 @@
 import Path from "./path";
 import fs from 'fs'
-
 const opts = {
   logDirectory: Path.logPath, // NOTE: folder must exist and be writable...
   fileNamePattern: "<DATE>.log",
@@ -14,7 +13,8 @@ export interface Logger {
   fatal: (data: any) => void;
   info: (data: any) => void;
 }
-let log: Logger = {
+let log: Logger
+log = {
   trace: (data) => {
     console.trace(data);
   },
@@ -34,8 +34,44 @@ let log: Logger = {
     console.info(data)
   }
 }
-if (fs.existsSync(Path.logPath) && process.env.LOG != "false") {
-  log = require("simple-node-Log").createRollingFileLogger(opts);
+const getLogger = async () => {
+  if (fs.existsSync(Path.logPath) && process.env.LOG != "false") {
+    const pkg = await import("simple-node-logger")
+    const logger = pkg.default || pkg
+    log = logger.createRollingFileLogger(opts);
+  }
+  return log
 }
 
-export const Log = log
+export const Log: Logger = {
+  debug: (data) => {
+    getLogger().then(logger => {
+      logger.debug(data)
+    })
+  },
+  fatal: (data) => {
+    getLogger().then(logger => {
+      logger.fatal(data)
+    })
+  },
+  warn: (data) => {
+    getLogger().then(logger => {
+      logger.warn(data)
+    })
+  },
+  info: (data) => {
+    getLogger().then(logger => {
+      logger.info(data)
+    })
+  },
+  trace: (data) => {
+    getLogger().then(logger => {
+      logger.trace(data)
+    })
+  },
+  error: (data) => {
+    getLogger().then(logger => {
+      logger.error(data)
+    })
+  }
+}
