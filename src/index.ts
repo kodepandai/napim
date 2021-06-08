@@ -14,7 +14,7 @@ const app = polka();
  * Start Node API Maker
  */
 const start = (config: { db?: any, beforeStart?: any, listen?:boolean} = { db: null, beforeStart: () => { }, listen:true}):Polka['handler']|Polka => {
-  const listen = config.listen || true
+  const listen = config.listen ?? true
   try {
     Console.info('Starting framework...')
     registerDb(config.db, config.beforeStart)
