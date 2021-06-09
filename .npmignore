@@ -13,4 +13,4 @@ CHANGELOG.md
 README.md
 dev.sqlite3
 pnpm-lock.yaml
-*.mddev.sqlite3
+*.md
