@@ -8,16 +8,16 @@ export interface DB extends Knex {
 const CustomQuery = () => {
     db.run = async (sql: any, params = []) => {
         return (trx.isTransaction ? db.raw(sql, params).transacting(trx) : db.raw(sql, params))
-            .then((res: { rows: any }) => {
-                return res.rows;
+            .then((res: any[]) => {
+                return res;
             }).catch((err: any) => {
                 throw err;
             });
     }
     db.row = async (sql: any, params = []) => {
         return (trx.isTransaction ? db.raw(sql, params).transacting(trx) : db.raw(sql, params))
-            .then((res: { rows: any }) => {
-                return res.rows[0];
+            .then((res: any[]) => {
+                return res[0];
             }).catch((err: any) => {
                 throw err;
             });

@@ -5,11 +5,11 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "watch": "tsc -w & nodemon -q -w dist dist/index.js",
-    "watch-test": "cd test && tsc -w & nodemon -q -w dist_test dist_test/index.js",
+    "watch": "nodemon --es-module-specifier-resolution=node dist/index.js",
+    "watch-test": "nodemon --es-module-specifier-resolution=node dist_test/index.js",
     "build": "rm -rf dist && tsc",
     "build-test": "rm -rf dist_test & cd test && tsc && cd ..",
-    "dev": "run-p watch watch-test",
+    "dev": "run-s build build-test watch watch-test",
     "start": "node --experimental-modules --es-module-specifier-resolution=node dist_test/index.js",
     "version": "auto-changelog -p && git add CHANGELOG.md"
   },
@@ -45,6 +45,7 @@
     "nodemon": "^2.0.2",
     "npm-run-all": "^4.1.5",
     "pg": "^8.5.1",
+    "sqlite3": "^5.0.2",
     "typescript": "^4.0.3"
   },
   "type": "module"

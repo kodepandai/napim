@@ -11,4 +11,6 @@ tsconfig.json
 migrations/
 CHANGELOG.md
 README.md
-yarn.lock
+dev.sqlite3
+pnpm-lock.yaml
+*.mddev.sqlite3

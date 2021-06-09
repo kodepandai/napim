@@ -4,3 +4,4 @@ dist/
 dist_test/
 knexfile.js
 yarn-error.log
+dev.sqlite3

@@ -10,15 +10,17 @@ import { ServerResponse as Response } from "http";
 
 let db: any
 let trx: any
-export const registerDb = (injectedDB = null, beforeStart = () => { }) => {
+export const registerDb = async (injectedDB = null, beforeStart = () => { }) => {
   db = injectedDB
   if (!db) {
     try {
       //Check is using knex or not
-      let DB = require('knex')
+      const pkgKnex = await import('knex')
+      const DB = pkgKnex.default || pkgKnex
       let knexFile: any;
       try {
-        knexFile = require(path.resolve(process.cwd(), "knexfile.js"));
+        const pkgKnexFile = await import(path.resolve(process.cwd(), "knexfile.js"));
+        knexFile = pkgKnexFile.default || pkgKnexFile
       } catch (error) {
         Console.error("missing knexfile.js, run npx knex init to create it!");
         process.exit(1);
