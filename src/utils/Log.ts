@@ -1,7 +1,7 @@
-import Path from "./path";
-import fs from 'fs'
+import {logPath} from "./path";
+import * as fs from 'fs'
 const opts = {
-  logDirectory: Path.logPath, // NOTE: folder must exist and be writable...
+  logDirectory: logPath, // NOTE: folder must exist and be writable...
   fileNamePattern: "<DATE>.log",
   dateFormat: "YYYY.MM.DD",
 };
@@ -35,7 +35,7 @@ log = {
   }
 }
 const getLogger = async () => {
-  if (fs.existsSync(Path.logPath) && process.env.LOG != "false") {
+  if (fs.existsSync(logPath) && process.env.LOG != "false") {
     const pkg = await import("simple-node-logger")
     const logger = pkg.default || pkg
     log = logger.createRollingFileLogger(opts);

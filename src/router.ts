@@ -1,12 +1,13 @@
 import polka, { NextHandler } from 'polka'
 
-import Path from "./utils/path";
-const { routePath, servicePath, middlewarePath } = Path
+import { routePath, servicePath, middlewarePath } from "./utils/path";
 import {
   serviceExec,
   Log,
   ApiException,
-  ApiResponse
+  ApiResponse,
+  handleError,
+  send
 } from "./core/ServiceProvider";
 import type {
   IRoutes,
@@ -15,8 +16,6 @@ import type {
 } from "./utils/interface";
 import type { Tmethod } from "./utils/types";
 import Console from "./utils/console";
-import * as Helper from "./utils/helper";
-const { handleError, send } = Helper
 import { ServerResponse as Response } from 'http';
 let router = polka()
 
@@ -64,47 +63,43 @@ const runServices = async (routes: IRoutes, routeMiddleware: IMiddleware[]) => {
       await Promise.all(
         (routes[method] || []).map(async (r) => {
           let service: IService;
+          let localMiddleware: IMiddleware[] = [];
           try {
             const instance = await import(servicePath + r.service);
             service = instance.default || instance;
-          } catch (err) {
-            throw new ApiException("Service Not Found", 404, {
-              type: "SERVICE_NOT_FOUND",
-              detail: "service " + r.service + " not found",
-            });
-          }
+            (service.middleware || []).forEach((m, i) => {
+              let mInstance = m.default || m;
+              localMiddleware[i] = async (req: any, res: Response, next: NextHandler) => {
+                try {
+                  if (!req.input) req.input = {}
+                  await mInstance(req, res, next);
+                } catch (err) {
+                  handleError(req, res, err);
+                }
+              };
+            })
 
-          let localMiddleware: IMiddleware[] = [];
-          (service.middleware || []).forEach((m, i) => {
-            let mInstance = m.default || m;
-            localMiddleware[i] = async (req: any, res: Response, next: NextHandler) => {
-              try {
-                if (!req.input) req.input = {}
-                await mInstance(req, res, next);
-              } catch (err) {
-                handleError(req, res, err);
+            router[method](
+              routes.prefix + r.path,
+              async (req, res: Response, next: NextHandler) => {
+                req.path = routes.prefix + r.path
+                delete req.params.wild
+                next()
+              },
+              ...routeMiddleware as [],
+              ...localMiddleware as [],
+              async (req: any, res: Response) => {
+                try {
+                  await serviceExec(req, res, service);
+                } catch (err) {
+                  handleError(req, res, err);
+                }
               }
-            };
-          })
-          router[method](
-            routes.prefix + r.path,
-            async (req, res: Response, next: NextHandler) => {
-              req.path = routes.prefix + r.path
-              delete req.params.wild
-              next()
-            },
-            ...routeMiddleware as [],
-            ...localMiddleware as [],
-            async (req: any, res: Response) => {
-              try {
-                await serviceExec(req, res, service);
-              } catch (err) {
-                handleError(req, res, err);
-              }
-            }
-          )
-        }
-        )
+            )
+          } catch (err) {
+            Log.fatal(err)
+          }
+        })
       )
     })
   )

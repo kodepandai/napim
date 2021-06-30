@@ -1,10 +1,10 @@
-import { IService } from "napim";
-import { ApiException, db } from "napim/dist/core/ServiceProvider";
+import { IService, ApiException, getDB } from "napim";
 import Upload from "../../middleware/Upload";
 /**
  * Service Test
  */
 
+const db = getDB()
 const service: IService = {
   method: ["post", "get"],
   transaction: true,

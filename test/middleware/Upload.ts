@@ -1,4 +1,4 @@
-import { IMiddleware } from "../../dist/utils/interface";
+import { IMiddleware } from "napim";
 
 const Upload: IMiddleware = async (req, res, next) => {
   console.log("mid upload");

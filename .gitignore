@@ -5,3 +5,4 @@ dist_test/
 knexfile.js
 yarn-error.log
 dev.sqlite3
+.DS_Store

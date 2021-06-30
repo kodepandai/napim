@@ -1,29 +1,27 @@
-import niv from 'node-input-validator/cjs'
+import {extendRule, extendMessages} from 'napim'
 const CustomValidation = () => {
-    niv.extend('even', () => {
-        console.log('even');
-
+    console.log('custom validation')
+    extendRule('even', (args) => {
         return {
-            name: "even",
-            handler: (value: any) => {
-                console.log('val', value);
-
+            name: 'even',
+            handler: (val: any)=>{
+                console.log('even validation', val, args);
                 return false
-            },
-        };
+           }
+       }
     });
-    niv.extend('unique', (args: any) => {
-        console.log('arg', args);
+
+    extendRule('unique', (args) => {
         return {
             name: 'unique',
-            handler: (v: any) => {
-                return false;
-            }
-        }
+            handler: (val: any)=>{
+                console.log('unique validation', val, args);
+                return false
+           }
+       }
+    });
 
-    })
-
-    niv.Messages.extend({
+    extendMessages({
         even: 'The :attr value must be an even number.',
         unique: 'The attribute is unique.',
     })

@@ -1,7 +1,7 @@
-import Napim from 'napim'
+import {start} from 'napim'
 import CustomQuery from "./util/CustomQuery";
 import CustomValidation from "./util/CustomValidation";
-Napim.start({
+start({
     beforeStart: () => {
         CustomQuery()
         CustomValidation()
