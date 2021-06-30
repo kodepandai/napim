@@ -2,12 +2,24 @@ import dotenv from 'dotenv'
 dotenv.config()
 import polka, { Polka } from 'polka'
 import router from "./router";
-import Console from "./utils/console";
 import Parser from 'body-parser'
-const { json } = Parser
-import * as ServiceProvider from "./core/ServiceProvider";
-import * as Path from './utils/path'
-const { Log, registerDb } = ServiceProvider
+const {json} = Parser
+import {ApiCall,
+  registerDb,
+  handleError,
+  parseError,
+  send,
+  ApiException,
+  ApiResponse,
+  ApiService,
+  getDB,
+  serviceExec,
+  Console,
+  Log,
+  extendRule,
+  addCustomMessages,
+  extendMessages} from "./core/ServiceProvider";
+import { basePath, servicePath, logPath, routePath, middlewarePath } from './utils/path'
 const port: string | number = process.env.PORT || 3000;
 const app = polka();
 /**
@@ -23,6 +35,7 @@ const start = (config: { db?: any, beforeStart?: any, listen?:boolean} = { db: n
     if (!listen) return app.handler
     return app.listen(port, () => onListening(port));
   } catch (error) {
+    console.log(error)
     if (typeof error == 'string') {
       Console.error(error)
     }
@@ -40,5 +53,20 @@ const onListening = (port: string | number) => {
 };
 
 export type { IMiddleware, IErrorData, IGmInstance, IKeyVal, IRoute, IRoutes, IService, ReqExtended } from "./utils/interface";
-const Napim = { app, start, router, ...ServiceProvider, ...Path }
-export default Napim
+export { app, start, router }
+export {ApiCall,
+  registerDb,
+  handleError,
+  parseError,
+  send,
+  ApiException,
+  ApiResponse,
+  ApiService,
+  getDB,
+  serviceExec,
+  Console,
+  Log,
+  extendRule,
+  addCustomMessages,
+  extendMessages}
+export { basePath, servicePath, logPath, routePath, middlewarePath }

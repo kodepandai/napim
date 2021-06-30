@@ -12,3 +12,6 @@ migrations/
 CHANGELOG.md
 README.md
 yarn.lock
+.DS_Store
+pnpm-lock.yaml
+rollup.config.js
