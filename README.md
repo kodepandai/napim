@@ -1,4 +1,8 @@
 # NAPIM
+
+[![NPM Version][npm-image]][npm-url]
+[![NPM Downloads][downloads-image]][downloads-url]
+
 Node API Maker built with polka and nodejs
 
 # Overview
@@ -161,5 +165,7 @@ This is default folder structur for typescript mode:
     
     If you want to access polka instance, just `import {app} from "napim"`
  
-    
-    
+[npm-image]: https://img.shields.io/npm/v/napim.svg
+[npm-url]: https://npmjs.org/package/napim
+[downloads-image]: https://img.shields.io/npm/dm/napim.svg
+[downloads-url]: https://npmjs.org/package/body-parser
