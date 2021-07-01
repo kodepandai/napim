@@ -30,8 +30,8 @@ The idea is to make API development quick and easy. Every single end point is ha
   
     `cd project-name && npm install`
 
-4. Update Napim to current version (currently still beta)
-    `npm install napim@beta`
+4. Update Napim to current version
+    `npm install napim`
 # File and Folder Structure
   
 This is default folder structur for typescript mode:
