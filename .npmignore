@@ -11,4 +11,10 @@ tsconfig.json
 migrations/
 CHANGELOG.md
 README.md
+dev.sqlite3
+pnpm-lock.yaml
 yarn.lock
+.DS_Store
+dist/esm/.DS_Store
+pnpm-lock.yaml
+rollup.config.js

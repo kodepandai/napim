@@ -1,9 +1,10 @@
-import { IService, db, ApiException } from "../../../dist/index";
+import { IService, ApiException, getDB } from "napim";
 import Upload from "../../middleware/Upload";
 /**
  * Service Test
  */
 
+const db = getDB()
 const service: IService = {
   method: ["post", "get"],
   transaction: true,
@@ -20,6 +21,8 @@ const service: IService = {
     }
     return await db.row('select * from users')
   },
-  rules: {},
+  rules: {
+    'id': 'even'
+  },
 }
 export default service;

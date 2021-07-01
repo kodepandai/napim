@@ -23,4 +23,4 @@ const debug = function (message: TConsoleMessage) {
     console.log('[napim] ' + (message.constructor == Array ? message.join('\n') : message))
 }
 
-export { success, warn, error, info, debug }
+export default { success, warn, error, info, debug }

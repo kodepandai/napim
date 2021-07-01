@@ -1,4 +1,8 @@
 # NAPIM
+
+[![NPM Version][npm-image]][npm-url]
+[![NPM Downloads][downloads-image]][downloads-url]
+
 Node API Maker built with polka and nodejs
 
 # Overview
@@ -9,12 +13,12 @@ The idea is to make API development quick and easy. Every single end point is ha
 - Error handling
 
 # Installation
-1. Install Napim CLI globally
+1. Install Napim CLI globally (optional)
 
-    `npm install -g napim-cli@beta`
+    `npm install -g napim-cli`
     
     you can check by running `napim --version`
-2. Generate Napim template
+2. Generate Napim template (optional)
     
     `napim init project-name`
     
@@ -26,7 +30,8 @@ The idea is to make API development quick and easy. Every single end point is ha
   
     `cd project-name && npm install`
 
-
+4. Update Napim to current version
+    `npm install napim`
 # File and Folder Structure
   
 This is default folder structur for typescript mode:
@@ -156,9 +161,11 @@ This is default folder structur for typescript mode:
         }
     ]
     ```
-    # Express App Instance
+    # Polka App Instance
     
     If you want to access polka instance, just `import {app} from "napim"`
  
-    
-    
+[npm-image]: https://img.shields.io/npm/v/napim.svg
+[npm-url]: https://npmjs.org/package/napim
+[downloads-image]: https://img.shields.io/npm/dm/napim.svg
+[downloads-url]: https://npmjs.org/package/body-parser

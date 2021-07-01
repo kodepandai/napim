@@ -1,6 +1,7 @@
-import { Request, Next as NextFunction } from 'polka'
+import { Request, NextHandler } from 'polka'
 import { Tmethod } from "./types";
 import { ServerResponse as Response } from 'http';
+import { MessagesContract, ValidationRuleArrayStringNotationContract, ValidationRulesContract, ValidationRuleStringNotationContract } from 'node-input-validator/esm/contracts';
 export interface IKeyVal {
   [key: string]: any;
 }
@@ -31,8 +32,8 @@ export interface IService {
     res: Response
 
   ) => any;
-  rules: object;
-  customMessages?: object | undefined;
+  rules: ValidationRuleArrayStringNotationContract | ValidationRulesContract | ValidationRuleStringNotationContract;
+  customMessages?: MessagesContract | undefined;
 }
 export interface IErrorData {
   type: string;
@@ -43,8 +44,8 @@ export interface ReqExtended extends Request {
   input?: any
 }
 export interface IMiddleware {
-  (req: ReqExtended, res: Response, next: NextFunction): Promise<void>
-  default?: (req: ReqExtended, res: Response, next: NextFunction) => Promise<void>
+  (req: ReqExtended, res: Response, next: NextHandler): Promise<void>
+  default?: (req: ReqExtended, res: Response, next: NextHandler) => Promise<void>
 }
 export interface IGmInstance {
   name: string;

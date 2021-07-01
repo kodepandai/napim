@@ -1,8 +1,9 @@
-import { start } from "../dist/index";
-import { extendQuery } from "./util/CustomQuery";
-
+import {start} from 'napim'
+import CustomQuery from "./util/CustomQuery";
+import CustomValidation from "./util/CustomValidation";
 start({
     beforeStart: () => {
-        extendQuery()
+        CustomQuery()
+        CustomValidation()
     }
 });
