@@ -4,11 +4,17 @@
   "description": "Node Api Maker build with polka",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
+  "exports": {
+    ".": {
+        "import": "./dist/esm/index.js",
+        "require": "./dist/cjs/index.js"
+    }
+  },
   "types": "dist/esm/index.d.ts",
   "scripts": {
     "watch": "tsc -w & nodemon -q -w dist dist/index.js",
     "watch-test": "cd test && tsc -w & nodemon -q -w dist_test dist_test/index.js",
-    "build": "rm -rf dist && NODE_ENV=production rollup -c",
+    "build": "rm -rf dist && NODE_ENV=production rollup -c && ./fixup",
     "build-test": "rm -rf dist_test & cd test && tsc && cd ..",
     "dev": "run-p watch watch-test",
     "start": "node --experimental-modules --es-module-specifier-resolution=node --unhandled-rejections=strict dist_test/index.js",

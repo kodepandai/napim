@@ -18,3 +18,4 @@ yarn.lock
 dist/esm/.DS_Store
 pnpm-lock.yaml
 rollup.config.js
+fixup

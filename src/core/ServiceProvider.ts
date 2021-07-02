@@ -1,6 +1,6 @@
 import path from "path";
 import { Log } from "../utils/Log";
-import niv from "node-input-validator/cjs"
+import niv from "node-input-validator/cjs/index.js"
 const {Validator, extend: extendRule, Messages: {addCustomMessages, extend: extendMessages}} = niv
 import { IKeyVal, IService, IErrorData, ReqExtended } from "../utils/interface";
 
