@@ -10,7 +10,7 @@ const makeBuild = (dir, format)=>{
         tsConfig['declarationDir'] =  'dist/esm'
     }
     return {
-        external: ['node-input-validator/cjs', 'validator', 'dotenv', 'simple-node-logger', 'body-parser', 'polka', 'knex'],
+        external: ['node-input-validator/cjs/index.js', 'validator', 'dotenv', 'simple-node-logger', 'body-parser', 'polka', 'knex'],
         input: 'src/index.ts',
         output: [
             { dir, format, exports: 'auto' },
