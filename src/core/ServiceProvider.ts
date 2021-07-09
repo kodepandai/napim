@@ -197,7 +197,6 @@ var ApiResponse = {
 /**
  * Executing service
  */
-let trx:any = null
 const ApiExec = async (
   service: IService,
   input: any,
@@ -205,9 +204,8 @@ const ApiExec = async (
   res: Response,
 ) => {
   if (service.transaction === true && db?.transaction) { //TODO: suport mongo transaction
-    await db.transaction(async (_trx: any) => {
-      trx = _trx
-      const result = await ApiCall(service, input, _trx, req, res);
+    await db.transaction(async (trx: any) => {
+      const result = await ApiCall(service, input, trx, req, res);
       return ApiResponse.success(
         req,
         res,
@@ -254,7 +252,7 @@ const serviceExec = async (
   }
   await ApiService(service).run(req, res);
 };
-const getDB = ()=>(trx??db)
+const getDB = ()=>db
 
 export {
   ApiCall,
