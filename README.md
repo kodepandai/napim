@@ -168,4 +168,4 @@ This is default folder structur for typescript mode:
 [npm-image]: https://img.shields.io/npm/v/napim.svg
 [npm-url]: https://npmjs.org/package/napim
 [downloads-image]: https://img.shields.io/npm/dm/napim.svg
-[downloads-url]: https://npmjs.org/package/body-parser
+[downloads-url]: https://npmjs.org/package/napim
