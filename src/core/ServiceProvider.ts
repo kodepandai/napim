@@ -76,7 +76,7 @@ export const registerDb = async (injectedDB = null, beforeStart = () => { }) => 
         const pkgKnexFile = await import(path.resolve(process.cwd(), "knexfile.js"));
         knexFile = pkgKnexFile.default || pkgKnexFile
       } catch (error) {
-        Console.error(error)
+        Console.error(error as Error)
       }
       if (!Object.keys(knexFile).includes(process.env.DB_ENV || "development")) {
         Console.error(
@@ -126,9 +126,10 @@ const ApiCall = async (
   res: Response
 ) => {
   try {
+    const rules = typeof service.rules =='function'?service.rules(input):service.rules
     const validator = new Validator(
       input,
-      service.rules,
+      rules,
       service.customMessages || undefined
     );
 
@@ -197,7 +198,6 @@ var ApiResponse = {
 /**
  * Executing service
  */
-let trx:any = null
 const ApiExec = async (
   service: IService,
   input: any,
@@ -205,9 +205,8 @@ const ApiExec = async (
   res: Response,
 ) => {
   if (service.transaction === true && db?.transaction) { //TODO: suport mongo transaction
-    await db.transaction(async (_trx: any) => {
-      trx = _trx
-      const result = await ApiCall(service, input, _trx, req, res);
+    await db.transaction(async (trx: any) => {
+      const result = await ApiCall(service, input, trx, req, res);
       return ApiResponse.success(
         req,
         res,
@@ -254,7 +253,7 @@ const serviceExec = async (
   }
   await ApiService(service).run(req, res);
 };
-const getDB = ()=>(trx??db)
+const getDB = ()=>db
 
 export {
   ApiCall,
