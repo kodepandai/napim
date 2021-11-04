@@ -2,6 +2,7 @@ import { Request, NextHandler } from 'polka'
 import { Tmethod } from "./types";
 import { ServerResponse as Response } from 'http';
 import { MessagesContract, ValidationRuleArrayStringNotationContract, ValidationRulesContract, ValidationRuleStringNotationContract } from 'node-input-validator/esm/contracts';
+type TRules = ValidationRuleArrayStringNotationContract | ValidationRulesContract | ValidationRuleStringNotationContract
 export interface IKeyVal {
   [key: string]: any;
 }
@@ -32,7 +33,7 @@ export interface IService {
     res: Response
 
   ) => any;
-  rules: ValidationRuleArrayStringNotationContract | ValidationRulesContract | ValidationRuleStringNotationContract;
+  rules: TRules|((input:any)=>TRules);
   customMessages?: MessagesContract | undefined;
 }
 export interface IErrorData {

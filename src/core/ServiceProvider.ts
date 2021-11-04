@@ -76,7 +76,7 @@ export const registerDb = async (injectedDB = null, beforeStart = () => { }) => 
         const pkgKnexFile = await import(path.resolve(process.cwd(), "knexfile.js"));
         knexFile = pkgKnexFile.default || pkgKnexFile
       } catch (error) {
-        Console.error(error)
+        Console.error(error as Error)
       }
       if (!Object.keys(knexFile).includes(process.env.DB_ENV || "development")) {
         Console.error(
@@ -126,9 +126,10 @@ const ApiCall = async (
   res: Response
 ) => {
   try {
+    const rules = typeof service.rules =='function'?service.rules(input):service.rules
     const validator = new Validator(
       input,
-      service.rules,
+      rules,
       service.customMessages || undefined
     );
 
