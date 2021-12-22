@@ -159,16 +159,6 @@ var ApiResponse = {
    * response json success
    */
   success: (req: ReqExtended, res: Response, data: object, code: number = 200) => {
-    if (code >= 300) {
-      let err = new ApiException("invalid http response code", 500, {
-        type: "INVALID_HTTP_CODE",
-        detail:
-          "you must return valid http code for success response, returned code is: " +
-          code,
-      });
-      Log.error(parseError(req, err));
-      return send(res, 500, parseError(req, err));
-    }
     return send(res, code, data);
   },
   /**
@@ -211,7 +201,7 @@ const ApiExec = async (
         req,
         res,
         result,
-        result ? result.code || 200 : 200
+        res.statusCode
       );
     });
   } else {
@@ -220,7 +210,7 @@ const ApiExec = async (
       req,
       res,
       result,
-      result ? result.code || 200 : 200
+      res.statusCode
     );
   }
 };
