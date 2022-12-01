@@ -1,3 +1,19 @@
+<a name="unreleased"></a>
+## [Unreleased]
+
+
+<a name="v4.2.0"></a>
+## [v4.2.0] - 2022-12-01
+### New Features
+- add MAX_JSON env to customize json parser limit
+
+
+<a name="v4.1.1-beta"></a>
+## [v4.1.1-beta] - 2021-12-22
+### Bug Fixes
+- set status code from response
+
+
 <a name="v4.1.0"></a>
 ## [v4.1.0] - 2021-11-04
 ### Bug Fixes
@@ -32,11 +48,11 @@
 <a name="v4.0.0-rc1"></a>
 ## [v4.0.0-rc1] - 2021-06-30
 
-<a name="v4.0.0-beta3"></a>
-## [v4.0.0-beta3] - 2021-06-10
-
 <a name="v4.0.0-beta"></a>
 ## [v4.0.0-beta] - 2021-06-10
+
+<a name="v4.0.0-beta3"></a>
+## [v4.0.0-beta3] - 2021-06-10
 ### Bug Fixes
 - require knex with esm import
 
@@ -101,16 +117,18 @@
 <a name="v1.0.1-beta.3"></a>
 ## v1.0.1-beta.3 - 2020-08-10
 
-[Unreleased]: https://github.com/axmad386/napim/compare/v4.1.0...HEAD
+[Unreleased]: https://github.com/axmad386/napim/compare/v4.2.0...HEAD
+[v4.2.0]: https://github.com/axmad386/napim/compare/v4.1.1-beta...v4.2.0
+[v4.1.1-beta]: https://github.com/axmad386/napim/compare/v4.1.0...v4.1.1-beta
 [v4.1.0]: https://github.com/axmad386/napim/compare/v4.0.3...v4.1.0
 [v4.0.3]: https://github.com/axmad386/napim/compare/v4.0.2...v4.0.3
 [v4.0.2]: https://github.com/axmad386/napim/compare/v4.0.1...v4.0.2
 [v4.0.1]: https://github.com/axmad386/napim/compare/v4.0.0...v4.0.1
 [v4.0.0]: https://github.com/axmad386/napim/compare/v4.0.0-rc1.2...v4.0.0
 [v4.0.0-rc1.2]: https://github.com/axmad386/napim/compare/v4.0.0-rc1...v4.0.0-rc1.2
-[v4.0.0-rc1]: https://github.com/axmad386/napim/compare/v4.0.0-beta3...v4.0.0-rc1
-[v4.0.0-beta3]: https://github.com/axmad386/napim/compare/v4.0.0-beta...v4.0.0-beta3
-[v4.0.0-beta]: https://github.com/axmad386/napim/compare/v4.0.0-beta2...v4.0.0-beta
+[v4.0.0-rc1]: https://github.com/axmad386/napim/compare/v4.0.0-beta...v4.0.0-rc1
+[v4.0.0-beta]: https://github.com/axmad386/napim/compare/v4.0.0-beta3...v4.0.0-beta
+[v4.0.0-beta3]: https://github.com/axmad386/napim/compare/v4.0.0-beta2...v4.0.0-beta3
 [v4.0.0-beta2]: https://github.com/axmad386/napim/compare/v4.0.0-beta1...v4.0.0-beta2
 [v4.0.0-beta1]: https://github.com/axmad386/napim/compare/v3.0.0...v4.0.0-beta1
 [v3.0.0]: https://github.com/axmad386/napim/compare/v2.0.4...v3.0.0
