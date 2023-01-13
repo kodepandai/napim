@@ -1,6 +1,10 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+<a name="v4.2.1"></a>
+## [v4.2.1] - 2023-01-13
+- bump `knex` version to v2.4.0 to avoid SQL injection vulnerability.
+
 
 <a name="v4.2.0"></a>
 ## [v4.2.0] - 2022-12-01
