@@ -11,7 +11,7 @@ specifiers:
   bcryptjs: ^2.4.3
   body-parser: ^1.19.0
   dotenv: ^8.2.0
-  knex: ^0.95.15
+  knex: ^2.4.0
   node-input-validator: 5.0.0-beta.3
   nodemon: ^2.0.2
   npm-run-all: ^4.1.5
@@ -42,7 +42,7 @@ devDependencies:
   '@types/node': 14.17.0
   '@types/polka': 0.5.2
   bcryptjs: 2.4.3
-  knex: 0.95.15_pg@8.6.0+sqlite3@5.0.2
+  knex: 2.4.0_pg@8.6.0+sqlite3@5.0.2
   nodemon: 2.0.7
   npm-run-all: 4.1.5
   pg: 8.6.0
@@ -549,8 +549,8 @@ packages:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
     dev: true
 
-  /colorette/2.0.16:
-    resolution: {integrity: sha512-hUewv7oMjCp+wkBv5Rm0v87eJhq4woh5rSR+42YSQJKecCqgIqNkZ6lAlQms/BwHPJA5NKMRlpxPRv0n8HQW6g==}
+  /colorette/2.0.19:
+    resolution: {integrity: sha512-3tlv/dIP7FWvj3BsbHrGLJ6l/oKh1O3TcgBqMn+yyCagOxc23fyzDS6HypQbgxWbkpDnf52p1LuR4eWDQ/K9WQ==}
     dev: true
 
   /combined-stream/1.0.8:
@@ -561,9 +561,9 @@ packages:
     dev: true
     optional: true
 
-  /commander/7.2.0:
-    resolution: {integrity: sha512-QrWXB+ZQSVPmIWIhtEO9H+gwHaMGYiF5ChvoJ+K9ZGHG/sVsa6yiesAD1GC/x46sET00Xlwo1u49RVVVzvcSkw==}
-    engines: {node: '>= 10'}
+  /commander/9.5.0:
+    resolution: {integrity: sha512-KRs7WVDKg86PWiuAqhDrAQnTXZKraVcCc6vFdL14qrZ/DcWwuRo7VoiYXalXO7S5GKpqYiVEwCbgFDfxNHKJBQ==}
+    engines: {node: ^12.20.0 || >=14}
     dev: true
 
   /commondir/1.0.1:
@@ -669,8 +669,8 @@ packages:
       supports-color: 5.5.0
     dev: true
 
-  /debug/4.3.2:
-    resolution: {integrity: sha512-mOp8wKcvj7XxC78zLgw/ZA+6TSgkoE2C/ienthhRD298T7UNwAg9diBpLRxC0mOezLl4B0xV7M0cCO6P/O0Xhw==}
+  /debug/4.3.4:
+    resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
     engines: {node: '>=6.0'}
     peerDependencies:
       supports-color: '*'
@@ -942,6 +942,11 @@ packages:
       has-symbols: 1.0.2
     dev: true
 
+  /get-package-type/0.1.0:
+    resolution: {integrity: sha512-pjzuKtY64GYfWizNAJ0fr9VqttZkNiK2iS430LtIHzjBEr6bX8Am2zm4sW4Ro5wjWW5cAlRL1qAMTcXbjNAO2Q==}
+    engines: {node: '>=8.0.0'}
+    dev: true
+
   /get-stream/4.1.0:
     resolution: {integrity: sha512-GMat4EJ5161kIy2HevLlr4luNjBgvmj413KaQA7jt4V8B4RDsfpHk7WQ9GVqfYyyx8OS/L66Kox+rJRNklLK7w==}
     engines: {node: '>=6'}
@@ -956,8 +961,8 @@ packages:
       pump: 3.0.0
     dev: true
 
-  /getopts/2.2.5:
-    resolution: {integrity: sha512-9jb7AW5p3in+IiJWhQiZmmwkpLaR/ccTWdWQCtZM66HJcHHLegowh4q4tSD7gouUyeNvFWRavfK9GXosQHDpFA==}
+  /getopts/2.3.0:
+    resolution: {integrity: sha512-5eDf9fuSXwxBL6q5HX+dhDj+dslFGWzU5thZ9kNKUkcPtaPdatmUFKwHFrLb/uf/WpA4BHET+AX3Scl56cAjpA==}
     dev: true
 
   /getpass/0.1.7:
@@ -1360,11 +1365,12 @@ packages:
       json-buffer: 3.0.0
     dev: true
 
-  /knex/0.95.15_pg@8.6.0+sqlite3@5.0.2:
-    resolution: {integrity: sha512-Loq6WgHaWlmL2bfZGWPsy4l8xw4pOE+tmLGkPG0auBppxpI0UcK+GYCycJcqz9W54f2LiGewkCVLBm3Wq4ur/w==}
-    engines: {node: '>=10'}
+  /knex/2.4.0_pg@8.6.0+sqlite3@5.0.2:
+    resolution: {integrity: sha512-i0GWwqYp1Hs2yvc2rlDO6nzzkLhwdyOZKRdsMTB8ZxOs2IXQyL5rBjSbS1krowCh6V65T4X9CJaKtuIfkaPGSA==}
+    engines: {node: '>=12'}
     hasBin: true
     peerDependencies:
+      better-sqlite3: '*'
       mysql: '*'
       mysql2: '*'
       pg: '*'
@@ -1372,6 +1378,8 @@ packages:
       sqlite3: '*'
       tedious: '*'
     peerDependenciesMeta:
+      better-sqlite3:
+        optional: true
       mysql:
         optional: true
       mysql2:
@@ -1385,20 +1393,21 @@ packages:
       tedious:
         optional: true
     dependencies:
-      colorette: 2.0.16
-      commander: 7.2.0
-      debug: 4.3.2
+      colorette: 2.0.19
+      commander: 9.5.0
+      debug: 4.3.4
       escalade: 3.1.1
       esm: 3.2.25
-      getopts: 2.2.5
+      get-package-type: 0.1.0
+      getopts: 2.3.0
       interpret: 2.2.0
       lodash: 4.17.21
       pg: 8.6.0
       pg-connection-string: 2.5.0
-      rechoir: 0.7.0
+      rechoir: 0.8.0
       resolve-from: 5.0.0
       sqlite3: 5.0.2
-      tarn: 3.0.1
+      tarn: 3.0.2
       tildify: 2.0.0
     transitivePeerDependencies:
       - supports-color
@@ -2066,9 +2075,9 @@ packages:
       picomatch: 2.2.3
     dev: true
 
-  /rechoir/0.7.0:
-    resolution: {integrity: sha512-ADsDEH2bvbjltXEP+hTIAmeFekTFK0V2BTxMkok6qILyAJEXV0AFfoWcAq4yfll5VdIMd/RVXq0lR+wQi5ZU3Q==}
-    engines: {node: '>= 0.10'}
+  /rechoir/0.8.0:
+    resolution: {integrity: sha512-/vxpCXddiX8NGfGO/mTafwjq4aFa/71pvamip0++IQk3zG8cbCj0fifNPrjjF1XMXUne91jL9OoxmdykoEtifQ==}
+    engines: {node: '>= 10.13.0'}
     dependencies:
       resolve: 1.20.0
     dev: true
@@ -2441,8 +2450,8 @@ packages:
       yallist: 3.1.1
     dev: true
 
-  /tarn/3.0.1:
-    resolution: {integrity: sha512-6usSlV9KyHsspvwu2duKH+FMUhqJnAh6J5J/4MITl8s94iSUQTLkJggdiewKv4RyARQccnigV48Z+khiuVZDJw==}
+  /tarn/3.0.2:
+    resolution: {integrity: sha512-51LAVKUSZSVfI05vjPESNc5vwqqZpbXCsU+/+wxlOrUjk2SnFTt97v9ZgQrD4YmxYW1Px6w2KjaDitCfkvgxMQ==}
     engines: {node: '>=8.0.0'}
     dev: true
 
